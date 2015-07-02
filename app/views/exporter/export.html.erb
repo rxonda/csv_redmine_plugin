@@ -3,7 +3,7 @@
 	<legend>Filtro:</legend>
 <%= form_tag({controller: "exporter", action: "export"}, method: "get") do %>
   Data início:
-  
+  <%= date_field(:filtro, :dataInicio) %>
   <%= label_tag(:dataTermino, "Data término:") %>
   <%= text_field_tag(:dataTermino) %>
   <%= submit_tag("Exportar") %>
