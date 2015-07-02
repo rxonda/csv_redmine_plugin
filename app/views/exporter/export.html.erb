@@ -17,9 +17,13 @@
   	<%= "#{t.user.name}, #{t.spent_on}, #{t.hours}, #{t.comments}" %>
   </li>
 <% end %>
-</ul></p>
+</ul>
+</p>
+<script src="/javascripts/i18n/datepicker-pt-BR.js?1431245373" type="text/javascript"></script>
 <script type="text/javascript">
 //<![CDATA[
-(function() { $('#time_entry_spent_on').datepicker(datepickerOptions); });
+(function($, datePickerOptions) { 
+	$('#dataInicio,#dataTermino').datepicker(datePickerOptions); 
+})(jQuery, {dateFormat: 'yy-mm-dd', firstDay: 1, showOn: 'button', buttonImageOnly: true, buttonImage: '/images/calendar.png?1431245373', showButtonPanel: true, showWeek: true, showOtherMonths: true, selectOtherMonths: true, changeMonth: true, changeYear: true, beforeShow: beforeShowDatePicker});
 //]]>
 </script>
