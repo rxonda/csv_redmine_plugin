@@ -3,11 +3,11 @@ class ExporterController < ApplicationController
 
 
   def export
-  	if params[:filtro][:dataInicio] then
-  		@inicio = params[:filtro][:dataInicio]
+  	if params[:dataInicio] then
+  		@inicio = params[:dataInicio]
   		@fim = params[:dataTermino]
   		@timeEntries = TimeEntry.where("spent_on >= :start_date and spent_on <= :end_date", 
-  			{start_date: params[:filtro][:dataInicio], end_date: params[:dataTermino]})
+  			{start_date: params[:dataInicio], end_date: params[:dataTermino]})
   	else
     	@timeEntries = TimeEntry.all
   	end
