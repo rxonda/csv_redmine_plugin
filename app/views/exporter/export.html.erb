@@ -1,13 +1,13 @@
 <h2>Timesheet</h2>
 <fieldset>
 	<legend>Filtro:</legend>
-<%= form_tag({controller: "exporter", action: "export"}, method: "get") do %>
-  <%= label_tag(:dataInicio, "Data início:") %>
-  <%= date_field(:params, :dataInicio) %>
-  <%= label_tag(:dataTermino, "Data término:") %>
-  <%= text_field_tag(:dataTermino) %>
-  <%= submit_tag("Exportar") %>
-<% end %>
+	<%= form_tag({controller: "exporter", action: "export"}, method: "get") do %>
+	  Data início:
+	  <%= date_field(:params, :dataInicio) %>
+	  <%= label_tag(:dataTermino, "Data término:") %>
+	  <%= text_field_tag(:dataTermino) %>
+	  <%= submit_tag("Exportar") %>
+	<% end %>
 </fieldset>
 <p>
 <h3>Lançamentos de <%= @inicio %> até <%= @fim %></h3>
