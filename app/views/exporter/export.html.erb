@@ -7,7 +7,6 @@
   <%= label_tag(:dataTermino, "Data término:") %>
   <%= text_field_tag(:dataTermino) %>
   <%= submit_tag("Exportar") %>
-  <%= date_field(:user, :born_on) %>
 <% end %>
 </fieldset>
 <p>
@@ -19,3 +18,8 @@
   </li>
 <% end %>
 </ul></p>
+<script type="text/javascript">
+//<![CDATA[
+(function() { $('#time_entry_spent_on').datepicker(datepickerOptions); });
+//]]>
+</script>
