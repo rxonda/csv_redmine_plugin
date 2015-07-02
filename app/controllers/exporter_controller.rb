@@ -3,7 +3,11 @@ class ExporterController < ApplicationController
 
 
   def export
-  	@resp = ['Blast of the universe!']
-  	@timeEntries = TimeEntry.all
+  	if params[:dataInicio] then
+  		@timeEntries = TimeEntry.where("spent_on >= :start_date and spent_on <= :end_date", 
+  			{start_date: params[:dataInicio], end_date: params[:dataTermino]})
+  	else
+    	@timeEntries = TimeEntry.all
+  	end
   end
 end
