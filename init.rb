@@ -6,5 +6,5 @@ Redmine::Plugin.register :csv_teste do
   url 'https://github.com/rxonda/cvs_redmine_plugin'
   author_url 'https://github.com/rxonda'
 
-  menu :application_menu, :exporter, { :controller => 'exporter', :action => 'export' }, :caption => 'Exportacao'
+  menu :application_menu, :exporter, { :controller => 'exporter', :action => 'export' }, :caption => 'Exportação'
 end
