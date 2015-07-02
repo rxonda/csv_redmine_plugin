@@ -2,7 +2,7 @@
 <fieldset>
 	<legend>Filtro:</legend>
 <%= form_tag({controller: "exporter", action: "export"}, method: "get") do %>
-  <%= label_tag(:dataInicio, "Data início:") %>
+  Data início:
   <%= date_field(:filtro, :dataInicio) %>
   <%= label_tag(:dataTermino, "Data término:") %>
   <%= text_field_tag(:dataTermino) %>
