@@ -1,5 +1,6 @@
-<h2>Exporter</h2>
+<h2>Timesheet</h2>
 <fieldset>
+	<legend>Filtro:</legend>
 <%= form_tag({controller: "exporter", action: "export"}, method: "get") do %>
   <%= label_tag(:dataInicio, "Data início:") %>
   <%= text_field_tag(:dataInicio) %>
@@ -9,7 +10,7 @@
 <% end %>
 </fieldset>
 <p>
-<h3>Timesheet de <%= @inicio %> até <%= @fim %></h3>
+<h3>Lançamentos de <%= @inicio %> até <%= @fim %></h3>
 <ul>
 <% @timeEntries.each do |t| %>
   <li>
