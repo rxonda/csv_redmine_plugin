@@ -3,5 +3,6 @@ class ExporterController < ApplicationController
 
 
   def export
+  	@resp = ['Blast of the universe!']
   end
 end

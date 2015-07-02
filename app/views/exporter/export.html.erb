@@ -1,5 +1,7 @@
 <h2>Exporter</h2>
 
-<p>
-<%= respostaMalcriada %>
-</p>
+<p><ul>
+<% @resp.each do |r| %>
+  <li><%= "Entrada: #{r}" %></li>
+<% end %>
+</ul></p>
