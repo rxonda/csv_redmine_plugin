@@ -4,4 +4,10 @@
 <% @resp.each do |r| %>
   <li><%= "Entrada: #{r}" %></li>
 <% end %>
+</ul>
+<h3>Timesheet</h3>
+<ul>
+<% @timeEntries.each do |t| %>
+  <%= "#{t.user.name}, #{t.spent_on}, #{t.hours}, #{t.comments}"
+<% end %>
 </ul></p>
