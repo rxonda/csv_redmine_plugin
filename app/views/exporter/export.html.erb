@@ -10,16 +10,16 @@
 <% end %>
 </fieldset>
 <p>
+<% if @timeEntries %>
 <h3>Lançamentos de <%= @inicio %> até <%= @fim %></h3>
 <ul>
-<% if @timeEntries %>
 	<% @timeEntries.each do |t| %>
 	  <li>
 	  	<%= "#{t.user.name}, #{t.spent_on}, #{t.hours}, #{t.comments}" %>
 	  </li>
 	<% end %>
-<% end %>
 </ul>
+<% end %>
 </p>
 <script src="/javascripts/i18n/datepicker-pt-BR.js?1431245373" type="text/javascript"></script>
 <script type="text/javascript">

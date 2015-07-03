@@ -18,7 +18,7 @@ class ExporterController < ApplicationController
 	@inicio = params[:dataInicio]
 	@fim = params[:dataTermino]
 	if @inicio > @fim
-		flash[:error] = 'Data de início não pode maior que a Data de término!'
+		flash[:error] = 'Data de início não pode ser maior que a Data de término!'
 		return
 	end
 	@timeEntries = TimeEntry.where("spent_on >= :start_date and spent_on <= :end_date", 
