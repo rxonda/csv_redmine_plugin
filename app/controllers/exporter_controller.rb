@@ -31,7 +31,7 @@ class ExporterController < ApplicationController
 		respond_to do |format|
 			format.html
 			format.csv do
-				agora = Date.now
+				agora = DateTime.now
 				filename = "TS_RCTI_#{@inicio.strftime('%Y%m%d')}I_#{@fim.strftime('%Y%m%d')}F_#{agora.strftime('%Y%m%d')}G_#{agora.strftime('%H%M%S')}G.CSV"
 				headers['Content-Disposition'] = "attachment; filename=#{filename}"
 				headers['content-Type'] ||= 'text/csv; charset=UTF-8; header=present'
