@@ -23,7 +23,7 @@ class ExporterController < ApplicationController
 		flash[:error] = 'Data de início não pode ser maior que a Data de término!'
 		return
 	end
-	@timeEntries = recuperaPorDatas :dataInicio => params[:dataInicio], :dataTermino => params[:dataTermino]
+	@timeEntries = recuperaPorDatas params[:dataInicio], params[:dataTermino]
 	if @timeEntries.empty?
 		flash[:warning] = 'Nenhum registro encontrado!'
 	else
