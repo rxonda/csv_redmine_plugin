@@ -10,7 +10,7 @@
 <% end %>
 </fieldset>
 <p>
-<% if @timeEntries %>
+<% if !@timeEntries.blank? %>
 <h3>Lançamentos de <%= @inicio %> até <%= @fim %></h3>
 <ul>
 	<% @timeEntries.each do |t| %>
