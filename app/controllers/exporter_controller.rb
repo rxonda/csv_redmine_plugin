@@ -3,8 +3,8 @@ class ExporterController < ApplicationController
 
 
   def export
-	@inicio = params[:dataInicio].strip
-	@fim = params[:dataTermino].strip
+	@inicio = !params[:dataInicio] || params[:dataInicio].strip
+	@fim = !params[:dataTermino] || params[:dataTermino].strip
   	if @inicio || !@inicio.empty? then
   		if !@fim || @fim.empty?
   			flash[:error] = 'Você deve informar a Data de término'
