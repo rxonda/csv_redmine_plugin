@@ -62,11 +62,11 @@ class ExporterController < ApplicationController
   		_temp = {}
   		_user = e.user
   		_project = e.project
-  		_temp[:objetoCusto] = project.custom_value_for(customFieldObjetoCusto)
-  		_temp[:centroCusto] = user.custom_value_for(customFieldCentroCusto)
-  		_temp[:matricula] = user.custom_value_for(customFieldMatricula)
-  		_temp[:cargo] = user.custom_value_for(customFieldCargo)
-  		_temp[:qtd] = t.hours
+  		_temp[:objetoCusto] = _project.custom_value_for(customFieldObjetoCusto)
+  		_temp[:centroCusto] = _user.custom_value_for(customFieldCentroCusto)
+  		_temp[:matricula] = _user.custom_value_for(customFieldMatricula)
+  		_temp[:cargo] = _user.custom_value_for(customFieldCargo)
+  		_temp[:qtd] = e.hours
   		_encontrados.push(_temp)
   	end
   	_encontrados
