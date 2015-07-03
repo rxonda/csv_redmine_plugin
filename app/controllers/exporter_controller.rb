@@ -23,9 +23,7 @@ class ExporterController < ApplicationController
 		flash[:error] = 'Data de início não pode ser maior que a Data de término!'
 		return
 	end
-#	@timeEntries = TimeEntry.where("spent_on >= :start_date and spent_on <= :end_date", 
-#		{start_date: params[:dataInicio], end_date: params[:dataTermino]})
-	@timeEntries = recuperaPorDatas params[:dataInicio], params[:dataTermino]
+	@timeEntries = recuperaPorDatas :dataInicio => params[:dataInicio], :dataTermino => params[:dataTermino]
 	if @timeEntries.empty?
 		flash[:warning] = 'Nenhum registro encontrado!'
 	else
@@ -36,7 +34,7 @@ class ExporterController < ApplicationController
 				filename = "TS_RCTI_#{@inicio.strftime('%Y%m%d')}I_#{@fim.strftime('%Y%m%d')}F_#{agora.strftime('%Y%m%d')}G_#{agora.strftime('%H%M%S')}G.CSV"
 				headers['Content-Disposition'] = "attachment; filename=#{filename}"
 				headers['content-Type'] ||= 'text/csv; charset=UTF-8; header=present'
-				@headers = ['Nome','Data','Qtd','Comentario']
+				@headers = ['Centro de Custo','Matrícula','Cargo','Qtd. Horas', 'Objeto de Custo']
 				# render :template => 'exporter/export.csv.erb'
 			end
 		end
