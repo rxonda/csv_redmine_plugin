@@ -12,10 +12,12 @@
 <p>
 <h3>Lançamentos de <%= @inicio %> até <%= @fim %></h3>
 <ul>
-<% @timeEntries.each do |t| %>
-  <li>
-  	<%= "#{t.user.name}, #{t.spent_on}, #{t.hours}, #{t.comments}" %>
-  </li>
+<% if @timeEntries %>
+	<% @timeEntries.each do |t| %>
+	  <li>
+	  	<%= "#{t.user.name}, #{t.spent_on}, #{t.hours}, #{t.comments}" %>
+	  </li>
+	<% end %>
 <% end %>
 </ul>
 </p>
