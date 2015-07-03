@@ -34,7 +34,7 @@ class ExporterController < ApplicationController
 				filename = "TS_RCTI_#{@inicio.strftime('%Y%m%d')}I_#{@fim.strftime('%Y%m%d')}F_#{agora.strftime('%Y%m%d')}G_#{agora.strftime('%H%M%S')}G.CSV"
 				headers['Content-Disposition'] = "attachment; filename=#{filename}"
 				headers['content-Type'] ||= 'text/csv; charset=UTF-8; header=present'
-				@headers = ['Centro de Custo','Matrícula','Cargo','Qtd. Horas', 'Objeto de Custo']
+				@headers = ['Centro de Custo','Matrícula','Cargo', 'Atividade','Qtd. Horas', 'Objeto de Custo']
 				# render :template => 'exporter/export.csv.erb'
 			end
 		end
@@ -65,6 +65,7 @@ class ExporterController < ApplicationController
   		_temp[:matricula] = _user.custom_value_for(customFieldMatricula)
   		_temp[:cargo] = _user.custom_value_for(customFieldCargo)
   		_temp[:qtd] = e.hours
+  		_temp[:atividade] = e.activity.name
   		_encontrados.push(_temp)
   	end
   	_encontrados
