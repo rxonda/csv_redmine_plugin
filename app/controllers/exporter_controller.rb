@@ -6,7 +6,7 @@ class ExporterController < ApplicationController
 
   def export
   	if params[:dataInicio].blank? && params[:dataTermino].blank?
-    	@timeEntries = TimeEntry.all
+    	@timeEntries = recuperaTodos
     	return
   	end
   	if params[:dataInicio].blank?
@@ -23,8 +23,9 @@ class ExporterController < ApplicationController
 		flash[:error] = 'Data de início não pode ser maior que a Data de término!'
 		return
 	end
-	@timeEntries = TimeEntry.where("spent_on >= :start_date and spent_on <= :end_date", 
-		{start_date: params[:dataInicio], end_date: params[:dataTermino]})
+#	@timeEntries = TimeEntry.where("spent_on >= :start_date and spent_on <= :end_date", 
+#		{start_date: params[:dataInicio], end_date: params[:dataTermino]})
+	@timeEntries = recuperaPorDatas params[:dataInicio], params[:dataTermino]
 	if @timeEntries.empty?
 		flash[:warning] = 'Nenhum registro encontrado!'
 	else
@@ -40,5 +41,34 @@ class ExporterController < ApplicationController
 			end
 		end
 	end
+  end
+
+  def recuperaPorDatas(dataInicio, dataTermino)
+  	pack(TimeEntry.where("spent_on >= :start_date and spent_on <= :end_date", 
+		{start_date: dataInicio, end_date: dataTermino}))
+  end
+
+  def recuperaTodos
+  	pack(TimeEntry.all)
+  end
+
+  def pack(colecao)
+  	_encontrados = []
+  	customFieldCentroCusto = CustomField.where(type: 'UserCustomField', name: 'Centro de Custo').first
+  	customFieldMatricula = CustomField.where(type: 'UserCustomField', name: 'Matrícula').first
+  	customFieldCargo = CustomField.where(type: 'UserCustomField', name: 'Cargo').first
+  	customFieldObjetoCusto = CustomField.where(type: 'ProjectCustomField', name: 'Centro de Custo').first
+  	colecao.each do |e|
+  		_temp = {}
+  		_user = e.user
+  		_project = e.project
+  		_temp[:objetoCusto] = project.custom_value_for(customFieldObjetoCusto)
+  		_temp[:centroCusto] = user.custom_value_for(customFieldCentroCusto)
+  		_temp[:matricula] = user.custom_value_for(customFieldMatricula)
+  		_temp[:cargo] = user.custom_value_for(customFieldCargo)
+  		_temp[:qtd] = t.hours
+  		_encontrados.push(_temp)
+  	end
+  	_encontrados
   end
 end

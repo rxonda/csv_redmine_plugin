@@ -15,7 +15,7 @@
 <ul>
 	<% @timeEntries.each do |t| %>
 	  <li>
-	  	<%= "#{t.user.name}, #{t.spent_on}, #{t.hours}, #{t.comments}" %>
+	  	<%= "#{t[:centroCusto]}, #{t[:matricula]}, #{t[:cargo]}, #{t[:qtd]}, #{t[:objetoCusto]}" %>
 	  </li>
 	<% end %>
 </ul>
