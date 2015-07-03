@@ -17,8 +17,8 @@ class ExporterController < ApplicationController
 		flash[:error] = 'Você deve informar a Data de término'
 		return
 	end
-	@inicio = params[:dataInicio]
-	@fim = params[:dataTermino]
+	@inicio = Date.parse(params[:dataInicio])
+	@fim = Date.parse(params[:dataTermino])
 	if @inicio > @fim
 		flash[:error] = 'Data de início não pode ser maior que a Data de término!'
 		return
@@ -31,9 +31,12 @@ class ExporterController < ApplicationController
 		respond_to do |format|
 			format.html
 			format.csv do
-				headers['Content-Disposition'] = 'attachment; filename=timeentries.csv'
+				agora = Date.now
+				filename = "TS_RCTI_#{@inicio.strftime('%Y%m%d')}I_#{@fim.strftime('%Y%m%d')}F_#{agora.strftime('%Y%m%d')}G_#{agora.strftime('%H%M%S')}G.CSV"
+				headers['Content-Disposition'] = "attachment; filename=#{filename}"
 				headers['content-Type'] ||= 'text/csv; charset=UTF-8; header=present'
 				@headers = ['Nome','Data','Qtd','Comentario']
+				# render :template => 'exporter/export.csv.erb'
 			end
 		end
 	end
