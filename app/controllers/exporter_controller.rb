@@ -1,3 +1,5 @@
+require 'csv'
+
 class ExporterController < ApplicationController
   unloadable
 
@@ -23,8 +25,16 @@ class ExporterController < ApplicationController
 	end
 	@timeEntries = TimeEntry.where("spent_on >= :start_date and spent_on <= :end_date", 
 		{start_date: params[:dataInicio], end_date: params[:dataTermino]})
-	if @timeEntries.size == 0
+	if @timeEntries.empty?
 		flash[:warning] = 'Nenhum registro encontrado!'
+	else
+		respond_to do |format|
+			format.html
+			format.csv do
+				headers['Content-Disposition'] = 'attachment; filename=\"user-list\"'
+				headers['content-Type'] ||= 'text/csv'
+			end
+		end
 	end
   end
 end
