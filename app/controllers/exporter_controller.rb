@@ -31,8 +31,9 @@ class ExporterController < ApplicationController
 		respond_to do |format|
 			format.html
 			format.csv do
-				headers['Content-Disposition'] = 'attachment; filename=\"user-list\"'
+				headers['Content-Disposition'] = 'attachment; filename=\"timeentries.csv\"'
 				headers['content-Type'] ||= 'text/csv'
+				@headers = ['Nome','Data','Qtd','Comentario']
 			end
 		end
 	end
