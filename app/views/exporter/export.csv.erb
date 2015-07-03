@@ -1,5 +1,5 @@
-<%- headers = ['Nome','Data','Qtd','Comentario'] -%>
+<% headers = ['Nome','Data','Qtd','Comentario'] %>
 <%= CSV.generate_line headers %>
-<%- @timeEntries.each do |t| -%>
+<% @timeEntries.each do |t| %>
 <%= CSV.generate_line([t.user.name, t.spent_on, t.hours, t.comments]) %>
-<%- end -%>
+<% end %>
