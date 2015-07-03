@@ -3,9 +3,9 @@ class ExporterController < ApplicationController
 
 
   def export
-	@inicio = !params[:dataInicio] || params[:dataInicio].strip
-	@fim = !params[:dataTermino] || params[:dataTermino].strip
-  	if @inicio || !@inicio.empty? then
+	@inicio = params[:dataInicio]
+	@fim = params[:dataTermino]
+  	if @inicio || !@inicio.strip.empty? then
   		if !@fim || @fim.empty?
   			flash[:error] = 'Você deve informar a Data de término'
   		elsif @inicio > @fim
@@ -14,7 +14,7 @@ class ExporterController < ApplicationController
 	  		@timeEntries = TimeEntry.where("spent_on >= :start_date and spent_on <= :end_date", 
 	  			{start_date: params[:dataInicio], end_date: params[:dataTermino]})
   		end
-  	elsif !@fim || @fim.empty?
+  	elsif !@fim || @fim.strip.empty?
   		flash[:error] = 'Você deve informar a Data de início'
   	else
     	@timeEntries = TimeEntry.all
