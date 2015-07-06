@@ -56,6 +56,7 @@ class ExporterController < ApplicationController
   	customFieldMatricula = CustomField.where(type: 'UserCustomField', name: 'Matrícula').first
   	customFieldCargo = CustomField.where(type: 'UserCustomField', name: 'Cargo').first
   	customFieldObjetoCusto = CustomField.where(type: 'ProjectCustomField', name: 'Centro de Custo').first
+    _consolidado = {}
   	colecao.each do |e|
   		_temp = {}
   		_user = e.user
@@ -68,6 +69,19 @@ class ExporterController < ApplicationController
   		_temp[:atividade] = e.activity.name
       _temp[:horaExtra] = calculateExtraTime(e.spent_on)
   		_encontrados.push(_temp)
+      _key = [e.spent_on, _temp[:matricula], _temp[:objetoCusto], _temp[:atividade]]
+      if !_consolidado[_key]
+        _consolidado[_key] = {
+          :objetoCusto => _project.custom_value_for(customFieldObjetoCusto).value,
+          :centroCusto => _user.custom_value_for(customFieldCentroCusto).value.split(' - ').first,
+          :matricula => _user.custom_value_for(customFieldMatricula).value,
+          :cargo => _user.custom_value_for(customFieldCargo).value.split(' - ').first,
+          :qtd => 0,
+          :atividade => e.activity.name,
+          :horaExtra => calculateExtraTime(e.spent_on)
+        }
+      end
+      _consolidado[:qtd]+=e.hours
   	end
   	_encontrados
   end
