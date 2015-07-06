@@ -81,7 +81,7 @@ class ExporterController < ApplicationController
           :horaExtra => calculateExtraTime(e.spent_on)
         }
       end
-      _consolidado[_key][:qtd]=_consolidado[_key][:qtd]+e.hours
+      _consolidado[_key][:qtd]+=e.hours
   	end
     _consolidado.each do |chave, valor|
       _encontrados.push valor
