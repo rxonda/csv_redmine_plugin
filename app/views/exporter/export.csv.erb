@@ -1,1 +1,1 @@
-<%= CSV.generate_line @headers %><% @timeEntries.each do |t| %><%= CSV.generate_line([t[:centroCusto], t[:matricula], t[:cargo], t[:atividade], t[:qtd], "#{'%.2f' % t[:horaExtra]}", t[:objetoCusto]]) %><% end %>
+<%= CSV.generate_line @headers %><% @timeEntries.each do |t| %><%= CSV.generate_line([t[:centroCusto], t[:matricula], t[:cargo], t[:atividade], "#{'%.2f' % t[:qtd]}", "#{'%.2f' % t[:horaExtra]}", t[:objetoCusto]]) %><% end %>
