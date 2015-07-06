@@ -85,6 +85,7 @@ class ExporterController < ApplicationController
         _temp[:atividade] = e.activity.name
         _temp[:horaExtra] = calculateExtraTime(e.spent_on)
         _encontrados.push(_temp)
+        _consolidado[_key] = _temp
       else
         _consolidado[_key][:qtd]+=e.hours
       end
