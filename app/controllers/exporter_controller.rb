@@ -68,7 +68,7 @@ class ExporterController < ApplicationController
   		_temp[:qtd] = e.hours
   		_temp[:atividade] = e.activity.name
       _temp[:horaExtra] = calculateExtraTime(e.spent_on)
-  		_encontrados.push(_temp)
+  	#	_encontrados.push(_temp)
       _key = [e.spent_on, _temp[:matricula], _temp[:objetoCusto], _temp[:atividade]]
       if !_consolidado[_key]
         _consolidado[_key] = {
@@ -83,6 +83,9 @@ class ExporterController < ApplicationController
       end
       _consolidado[_key][:qtd]=_consolidado[_key][:qtd]+e.hours
   	end
+    _consolidado.each do |chave, valor|
+      _encontrados.push valor
+    end
   	_encontrados
   end
 
