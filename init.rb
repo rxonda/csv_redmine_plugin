@@ -1,3 +1,5 @@
+Holidays::TIPOS_FERIADOS = [:br,:observed,:informal]
+
 Redmine::Plugin.register :cvs_redmine_plugin do
   name 'Csv Teste plugin'
   author 'Raphael R. Costa'
