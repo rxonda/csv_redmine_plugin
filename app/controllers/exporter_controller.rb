@@ -70,52 +70,47 @@ class ExporterController < ApplicationController
         _data,
         _matricula,
         _objetoCusto,
-        _atividade,
-        _horaExtra
+        _atividade
       ]
       _keyDataMatricula = [
         _data,
         _matricula
       ]
       if !_porDataMatricula[_keyDataMatricula]
-        _porDataMatricula[_keyDataMatricula] = 0.0
+        _porDataMatricula[_keyDataMatricula] = {
+          :total => 0.0
+          :tipo => _horaExtra
+          :lancamentos => []
+        }
       end
-      _porDataMatricula[_keyDataMatricula] += e.hours
+      _porDataMatricula[_keyDataMatricula][:total] += e.hours
 
       if !_consolidado[_key]
-      #  _consolidado[_key] = {
-      #    :objetoCusto => _project.custom_value_for(customFieldObjetoCusto).value,
-      #    :centroCusto => _user.custom_value_for(customFieldCentroCusto).value.split(' - ').first,
-      #    :matricula => _user.custom_value_for(customFieldMatricula).value,
-      #    :cargo => _user.custom_value_for(customFieldCargo).value.split(' - ').first,
-      #    :qtd => 0.0,
-      #    :atividade => e.activity.name,
-      #    :horaExtra => calculateExtraTime(e.spent_on)
-      #  }
-        _temp = {}
-        _temp[:objetoCusto] = _objetoCusto
-        _temp[:centroCusto] = _user.custom_value_for(customFieldCentroCusto).value.split(' - ').first
-        _temp[:matricula] = _matricula
-        _temp[:cargo] = _user.custom_value_for(customFieldCargo).value.split(' - ').first
-        _temp[:qtd] = e.hours
-        _temp[:atividade] = _atividade
-        _temp[:horaExtra] = _horaExtra
+        _temp = {
+          :objetoCusto => _objetoCusto,
+          :centroCusto => _user.custom_value_for(customFieldCentroCusto).value.split(' - ').first,
+          :matricula => _matricula,
+          :cargo => _user.custom_value_for(customFieldCargo).value.split(' - ').first,
+          :qtd => e.hours,
+          :atividade => _atividade,
+          :horaExtra => _horaExtra
+        }
         _encontrados.push(_temp)
+        _porDataMatricula[_keyDataMatricula][:lancamentos].push _temp
         _consolidado[_key] = _temp
       else
         _consolidado[_key][:qtd]+=e.hours
       end
   	end
-    _consolidado.each do |chave, valor|
-      if chave[4] == 0.0
-        chaveQtdHorasNoDia = [
-          chave[0],
-          chave[1]
-        ]
-        if _porDataMatricula[chaveQtdHorasNoDia] > 8.0
-          novoValor = valor.clone
-          novoValor[:horaExtra] = 0.5
-          _encontrados.push novoValor
+    _porDataMatricula.each do |chave, valor|
+      if valor[:tipo] == 0.0 && valor[:total] > 8.0
+        qtdExtra = valor[:total] - 8.0
+        valor[:lancamentos].each do |l|
+          razao = l[:qtd] / valor[:total]
+          novaEntrada = l.clone
+          l[:qtd] = razao * 8.0
+          novaEntrada[:qtd] = razao * qtdExtra
+          _encontrados.push novaEntrada          
         end
       end
     end
