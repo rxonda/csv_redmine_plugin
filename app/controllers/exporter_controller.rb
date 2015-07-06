@@ -78,8 +78,8 @@ class ExporterController < ApplicationController
       ]
       if !_porDataMatricula[_keyDataMatricula]
         _porDataMatricula[_keyDataMatricula] = {
-          :total => 0.0
-          :tipo => _horaExtra
+          :total => 0.0,
+          :tipo => _horaExtra,
           :lancamentos => []
         }
       end
