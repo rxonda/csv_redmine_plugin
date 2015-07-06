@@ -76,7 +76,7 @@ class ExporterController < ApplicationController
     if e.sunday?
       return 1.0
     end
-    if e.holiday?(Holidays::TIPOS_FERIADOS))
+    if e.holiday?(Holidays::TIPOS_FERIADOS)
       return 1.0
     end
     if e.saturday?
