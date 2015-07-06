@@ -60,10 +60,10 @@ class ExporterController < ApplicationController
   		_temp = {}
   		_user = e.user
   		_project = e.project
-  		_temp[:objetoCusto] = _project.custom_value_for(customFieldObjetoCusto)
-  		_temp[:centroCusto] = _user.custom_value_for(customFieldCentroCusto).split(' - ').first
-  		_temp[:matricula] = _user.custom_value_for(customFieldMatricula)
-  		_temp[:cargo] = _user.custom_value_for(customFieldCargo).split(' - ').first
+  		_temp[:objetoCusto] = _project.custom_value_for(customFieldObjetoCusto).value
+  		_temp[:centroCusto] = _user.custom_value_for(customFieldCentroCusto).value.split(' - ').first
+  		_temp[:matricula] = _user.custom_value_for(customFieldMatricula).value
+  		_temp[:cargo] = _user.custom_value_for(customFieldCargo).value.split(' - ').first
   		_temp[:qtd] = e.hours
   		_temp[:atividade] = e.activity.name
       _temp[:horaExtra] = calculateExtraTime(e.spent_on)
