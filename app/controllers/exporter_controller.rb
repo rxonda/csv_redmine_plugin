@@ -72,16 +72,16 @@ class ExporterController < ApplicationController
   	_encontrados
   end
 
-  def calculateExtraTime(data) {
-    if(e.sunday?) {
+  def calculateExtraTime(data)
+    if e.sunday?
       return 1.0
-    }
-    if(e.holiday?(Holidays::TIPOS_FERIADOS)) {
+    end
+    if e.holiday?(Holidays::TIPOS_FERIADOS))
       return 1.0
-    }
-    if(e.saturday?) {
+    end
+    if e.saturday?
       return 0.5
-    }
+    end
     return 0.0
-  }
+  end
 end
