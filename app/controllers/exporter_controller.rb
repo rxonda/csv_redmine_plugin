@@ -66,7 +66,7 @@ class ExporterController < ApplicationController
   		_temp[:cargo] = _user.custom_value_for(customFieldCargo)
   		_temp[:qtd] = e.hours
   		_temp[:atividade] = e.activity.name
-      _temp[:horaExtra] = 0.00
+      _temp[:horaExtra] = 0.50
   		_encontrados.push(_temp)
   	end
   	_encontrados
