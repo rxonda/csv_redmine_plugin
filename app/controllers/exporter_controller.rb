@@ -58,34 +58,40 @@ class ExporterController < ApplicationController
   	customFieldObjetoCusto = CustomField.where(type: 'ProjectCustomField', name: 'Centro de Custo').first
     _consolidado = {}
   	colecao.each do |e|
-  		_temp = {}
   		_user = e.user
   		_project = e.project
-  		_temp[:objetoCusto] = _project.custom_value_for(customFieldObjetoCusto).value
-  		_temp[:centroCusto] = _user.custom_value_for(customFieldCentroCusto).value.split(' - ').first
-  		_temp[:matricula] = _user.custom_value_for(customFieldMatricula).value
-  		_temp[:cargo] = _user.custom_value_for(customFieldCargo).value.split(' - ').first
-  		_temp[:qtd] = e.hours
-  		_temp[:atividade] = e.activity.name
-      _temp[:horaExtra] = calculateExtraTime(e.spent_on)
-  	#	_encontrados.push(_temp)
-      _key = [e.spent_on, _temp[:matricula], _temp[:objetoCusto], _temp[:atividade]]
+      _key = [
+        e.spent_on,
+        _user.custom_value_for(customFieldMatricula).value,
+        _project.custom_value_for(customFieldObjetoCusto).value,
+        e.activity.name
+      ]
       if !_consolidado[_key]
-        _consolidado[_key] = {
-          :objetoCusto => _project.custom_value_for(customFieldObjetoCusto).value,
-          :centroCusto => _user.custom_value_for(customFieldCentroCusto).value.split(' - ').first,
-          :matricula => _user.custom_value_for(customFieldMatricula).value,
-          :cargo => _user.custom_value_for(customFieldCargo).value.split(' - ').first,
-          :qtd => 0.0,
-          :atividade => e.activity.name,
-          :horaExtra => calculateExtraTime(e.spent_on)
-        }
+      #  _consolidado[_key] = {
+      #    :objetoCusto => _project.custom_value_for(customFieldObjetoCusto).value,
+      #    :centroCusto => _user.custom_value_for(customFieldCentroCusto).value.split(' - ').first,
+      #    :matricula => _user.custom_value_for(customFieldMatricula).value,
+      #    :cargo => _user.custom_value_for(customFieldCargo).value.split(' - ').first,
+      #    :qtd => 0.0,
+      #    :atividade => e.activity.name,
+      #    :horaExtra => calculateExtraTime(e.spent_on)
+      #  }
+        _temp = {}
+        _temp[:objetoCusto] = _project.custom_value_for(customFieldObjetoCusto).value
+        _temp[:centroCusto] = _user.custom_value_for(customFieldCentroCusto).value.split(' - ').first
+        _temp[:matricula] = _user.custom_value_for(customFieldMatricula).value
+        _temp[:cargo] = _user.custom_value_for(customFieldCargo).value.split(' - ').first
+        _temp[:qtd] = e.hours
+        _temp[:atividade] = e.activity.name
+        _temp[:horaExtra] = calculateExtraTime(e.spent_on)
+        _encontrados.push(_temp)
+      else
+        _consolidado[_key][:qtd]+=e.hours
       end
-      _consolidado[_key][:qtd]+=e.hours
   	end
-    _consolidado.each do |chave, valor|
-      _encontrados.push valor
-    end
+#    _consolidado.each do |chave, valor|
+ #     _encontrados.push valor
+  #  end
   	_encontrados
   end
 
