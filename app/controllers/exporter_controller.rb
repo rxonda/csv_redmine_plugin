@@ -76,12 +76,12 @@ class ExporterController < ApplicationController
           :centroCusto => _user.custom_value_for(customFieldCentroCusto).value.split(' - ').first,
           :matricula => _user.custom_value_for(customFieldMatricula).value,
           :cargo => _user.custom_value_for(customFieldCargo).value.split(' - ').first,
-          :qtd => 0,
+          :qtd => 0.0,
           :atividade => e.activity.name,
           :horaExtra => calculateExtraTime(e.spent_on)
         }
       end
-      _consolidado[:qtd]+=e.hours
+      _consolidado[:qtd]=_consolidado[:qtd]+e.hours
   	end
   	_encontrados
   end
