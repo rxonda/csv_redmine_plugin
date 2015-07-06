@@ -57,15 +57,31 @@ class ExporterController < ApplicationController
   	customFieldCargo = CustomField.where(type: 'UserCustomField', name: 'Cargo').first
   	customFieldObjetoCusto = CustomField.where(type: 'ProjectCustomField', name: 'Centro de Custo').first
     _consolidado = {}
+    _porDataMatricula = {}
   	colecao.each do |e|
   		_user = e.user
   		_project = e.project
+      _data = e.spent_on
+      _matricula = _user.custom_value_for(customFieldMatricula).value
+      _objetoCusto = _project.custom_value_for(customFieldObjetoCusto).value
+      _atividade = e.activity.name
+      _horaExtra = calculateExtraTime(_data)
       _key = [
-        e.spent_on,
-        _user.custom_value_for(customFieldMatricula).value,
-        _project.custom_value_for(customFieldObjetoCusto).value,
-        e.activity.name
+        _data,
+        _matricula,
+        _objetoCusto,
+        _atividade,
+        _horaExtra
       ]
+      _keyDataMatricula = [
+        _data,
+        _matricula
+      ]
+      if !_porDataMatricula[_keyDataMatricula]
+        _porDataMatricula[_keyDataMatricula] = 0.0
+      end
+      _porDataMatricula[_keyDataMatricula] += e.hours
+
       if !_consolidado[_key]
       #  _consolidado[_key] = {
       #    :objetoCusto => _project.custom_value_for(customFieldObjetoCusto).value,
@@ -77,22 +93,32 @@ class ExporterController < ApplicationController
       #    :horaExtra => calculateExtraTime(e.spent_on)
       #  }
         _temp = {}
-        _temp[:objetoCusto] = _project.custom_value_for(customFieldObjetoCusto).value
+        _temp[:objetoCusto] = _objetoCusto
         _temp[:centroCusto] = _user.custom_value_for(customFieldCentroCusto).value.split(' - ').first
-        _temp[:matricula] = _user.custom_value_for(customFieldMatricula).value
+        _temp[:matricula] = _matricula
         _temp[:cargo] = _user.custom_value_for(customFieldCargo).value.split(' - ').first
         _temp[:qtd] = e.hours
-        _temp[:atividade] = e.activity.name
-        _temp[:horaExtra] = calculateExtraTime(e.spent_on)
+        _temp[:atividade] = _atividade
+        _temp[:horaExtra] = _horaExtra
         _encontrados.push(_temp)
-        #_consolidado[_key] = _temp
+        _consolidado[_key] = _temp
       else
         _consolidado[_key][:qtd]+=e.hours
       end
   	end
-#    _consolidado.each do |chave, valor|
- #     _encontrados.push valor
-  #  end
+    _consolidado.each do |chave, valor|
+      if chave[4] == 0.0
+        chaveQtdHorasNoDia = [
+          chave[0],
+          chave[1]
+        ]
+        if _porDataMatricula[chaveQtdHorasNoDia] > 8.0
+          novoValor = valor.clone
+          novoValor[:horaExtra] = 0.5
+          _encontrados.push novoValor
+        end
+      end
+    end
   	_encontrados
   end
 
