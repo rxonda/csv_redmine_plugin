@@ -3,11 +3,6 @@ require 'csv'
 class ExporterController < ApplicationController
   unloadable
 
-#  def initialize
-#    @timeEntries = []
-#    @consolidado = {}
-#    @porDataMatricula = {}
-#  end
 
   def export
   	if params[:dataInicio].blank? && params[:dataTermino].blank?
@@ -30,6 +25,10 @@ class ExporterController < ApplicationController
   		return
   	end
 
+    @timeEntries = []
+    @consolidado = {}
+    @porDataMatricula = {}
+    
   	recuperaPorDatas(_inicio,_fim) {|t| pack t}
 
     @porDataMatricula.each do |chave, valor|
