@@ -1,13 +1,13 @@
 require 'csv'
 
 class ExporterController < ApplicationController
+  unloadable
+
   def initialize
     @timeEntries = []
     @consolidado = {}
     @porDataMatricula = {}
   end
-
-  unloadable
 
   def export
   	if params[:dataInicio].blank? && params[:dataTermino].blank?
