@@ -1,11 +1,11 @@
 require 'csv'
 
 class ExporterController < ApplicationController
-#  def initialize
-#    @timeEntries = []
-#    @consolidado = {}
-#    @porDataMatricula = {}
-#  end
+  def initialize
+    @timeEntries = []
+    @consolidado = {}
+    @porDataMatricula = {}
+  end
 
   unloadable
 
