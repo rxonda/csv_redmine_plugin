@@ -1,10 +1,10 @@
 <h2>Timesheet</h2>
 <%= form_tag({controller: "exporter", action: "export", format: 'csv'}, method: "get") do %>
 	<div class="box tabular">
-		<%= label_tag(:dataInicio, "Data de início do período:") %>
-		<%= text_field_tag(:dataInicio) %>
-		<%= label_tag(:dataTermino, "Data de fim do período:") %>
-		<%= text_field_tag(:dataTermino) %>
+		<p><%= label_tag(:dataInicio, "Data de início do período:") %>
+		<%= text_field_tag(:dataInicio) %></p>
+		<p><%= label_tag(:dataTermino, "Data de fim do período:") %>
+		<%= text_field_tag(:dataTermino) %></p>
 	</div>
 	<%= submit_tag("Gerar arquivo") %>
 <% end %>
