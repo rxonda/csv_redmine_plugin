@@ -1,14 +1,13 @@
 <h2>Timesheet</h2>
-<fieldset>
-	<legend>Filtro</legend>
-	<%= form_tag({controller: "exporter", action: "export", format: 'csv'}, method: "get") do %>
-	  <%= label_tag(:dataInicio, "Data de início do período:") %>
-	  <%= text_field_tag(:dataInicio) %>
-	  <%= label_tag(:dataTermino, "Data de fim do período:") %>
-	  <%= text_field_tag(:dataTermino) %>
-	  <%= submit_tag("Gerar arquivo") %>
-	<% end %>
-</fieldset>
+<%= form_tag({controller: "exporter", action: "export", format: 'csv'}, method: "get") do %>
+	<div class="box tabular">
+		<%= label_tag(:dataInicio, "Data de início do período:") %>
+		<%= text_field_tag(:dataInicio) %>
+		<%= label_tag(:dataTermino, "Data de fim do período:") %>
+		<%= text_field_tag(:dataTermino) %>
+	</div>
+	<%= submit_tag("Gerar arquivo") %>
+<% end %>
 <script src="/javascripts/i18n/datepicker-pt-BR.js?1431245373" type="text/javascript"></script>
 <script type="text/javascript">
 //<![CDATA[
