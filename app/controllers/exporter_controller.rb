@@ -92,7 +92,7 @@ class ExporterController < ApplicationController
 
     callback = block
     callback.call({
-      :data => _data
+      :data => _data,
       :objetoCusto => _objetoCusto,
       :centroCusto => _user.custom_value_for(customFieldCentroCusto).value.split(' - ').first,
       :matricula => _matricula,
