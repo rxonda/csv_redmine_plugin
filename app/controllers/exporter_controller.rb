@@ -56,6 +56,8 @@ class ExporterController < ApplicationController
   	customFieldMatricula = CustomField.where(type: 'UserCustomField', name: 'Matrícula').first
   	customFieldCargo = CustomField.where(type: 'UserCustomField', name: 'Cargo').first
   	customFieldObjetoCusto = CustomField.where(type: 'ProjectCustomField', name: 'Centro de Custo').first
+    customFieldCodigoSAP = CustomField.where(type: "TimeEntryActivityCustomField", name: 'Código SAP').first
+
     _consolidado = {}
     _porDataMatricula = {}
   	colecao.each do |e|
@@ -64,7 +66,7 @@ class ExporterController < ApplicationController
       _data = e.spent_on
       _matricula = _user.custom_value_for(customFieldMatricula).value
       _objetoCusto = _project.custom_value_for(customFieldObjetoCusto).value
-      _atividade = e.activity.name
+      _atividade = e.activity.custom_value_for(customFieldCodigoSAP).value
       _horaExtra = calculateExtraTime(_data)
       _key = [
         _data,
