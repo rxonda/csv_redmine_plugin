@@ -41,6 +41,11 @@ class ExporterController < ApplicationController
   	end
   end
 
+  private
+  :full => 100.0
+  :half => 50.0
+  :none => 0.0
+
   def recuperaPorDatas(dataInicio, dataTermino)
   	pack(TimeEntry.where("spent_on >= :start_date and spent_on <= :end_date", 
 		{start_date: dataInicio, end_date: dataTermino}))
@@ -110,7 +115,7 @@ class ExporterController < ApplicationController
           novaEntrada = l.clone
           l[:qtd] = razao * 8.0
           novaEntrada[:qtd] = razao * qtdExtra
-          novaEntrada[:horaExtra] = 50.0
+          novaEntrada[:horaExtra] = [:half]
           _encontrados.push novaEntrada          
         end
       end
