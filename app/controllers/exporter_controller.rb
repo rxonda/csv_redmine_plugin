@@ -34,17 +34,12 @@ class ExporterController < ApplicationController
   				filename = "TS_RCTI_#{@inicio.strftime('%Y%m%d')}I_#{@fim.strftime('%Y%m%d')}F_#{agora.strftime('%Y%m%d')}G_#{agora.strftime('%H%M%S')}G.CSV"
   				headers['Content-Disposition'] = "attachment; filename=#{filename}"
   				headers['content-Type'] ||= 'text/csv; charset=UTF-8; header=present'
-  				@headers = ['Centro de Custo','Matrícula','Cargo', 'Atividade','Qtd. Horas', '% Adicional', 'Objeto de Custo']
-  				# render :template => 'exporter/export.csv.erb'
   			end
   		end
   	end
   end
 
   private
-  full: 100.0
-  half: 50.0
-  none: 0.0
 
   def recuperaPorDatas(dataInicio, dataTermino)
   	pack(TimeEntry.where("spent_on >= :start_date and spent_on <= :end_date", 
@@ -115,7 +110,7 @@ class ExporterController < ApplicationController
           novaEntrada = l.clone
           l[:qtd] = razao * 8.0
           novaEntrada[:qtd] = razao * qtdExtra
-          novaEntrada[:horaExtra] = [:half]
+          novaEntrada[:horaExtra] = 50.0
           _encontrados.push novaEntrada          
         end
       end
