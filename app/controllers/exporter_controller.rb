@@ -82,26 +82,19 @@ class ExporterController < ApplicationController
     customFieldCodigoSAP = CustomField.where(type: "TimeEntryActivityCustomField", name: 'Código SAP').first
 
     _user = e.user
-    _project = e.project
     _data = e.spent_on
-    _matricula = _user.custom_value_for(customFieldMatricula).value
-    _objetoCusto = _project.custom_value_for(customFieldObjetoCusto).value
-    _atividade = e.activity.custom_value_for(customFieldCodigoSAP).value
-    _qtdHoras = e.hours
-    _horaExtra = calculateExtraTime(_data)
 
     callback = block
     callback.call({
       :data => _data,
-      :objetoCusto => _objetoCusto,
+      :objetoCusto => e.project.custom_value_for(customFieldObjetoCusto).value,
       :centroCusto => _user.custom_value_for(customFieldCentroCusto).value.split(' - ').first,
-      :matricula => _matricula,
+      :matricula => _user.custom_value_for(customFieldMatricula).value,
       :cargo => _user.custom_value_for(customFieldCargo).value.split(' - ').first,
-      :qtd => _qtdHoras,
-      :atividade => _atividade,
-      :horaExtra => _horaExtra
+      :qtd => e.hours,
+      :atividade => e.activity.custom_value_for(customFieldCodigoSAP).value,
+      :horaExtra => calculateExtraTime(_data)
     })
-
   end
 
   def consolida(entry)
