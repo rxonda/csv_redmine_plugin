@@ -30,7 +30,7 @@ class ExporterController < ApplicationController
   		return
   	end
 
- # 	recuperaPorDatas(_inicio,_fim) {|t| pack t}
+  	recuperaPorDatas(_inicio,_fim) {|t| pack t}
 
     @porDataMatricula.each do |chave, valor|
       if valor[:tipo] == 0.0 && valor[:total] > 8.0
