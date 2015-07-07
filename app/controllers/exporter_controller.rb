@@ -110,6 +110,7 @@ class ExporterController < ApplicationController
           novaEntrada = l.clone
           l[:qtd] = razao * 8.0
           novaEntrada[:qtd] = razao * qtdExtra
+          novaEntrada[:horaExtra] = 0.5
           _encontrados.push novaEntrada          
         end
       end
