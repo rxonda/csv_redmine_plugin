@@ -42,9 +42,9 @@ class ExporterController < ApplicationController
   end
 
   private
-  :full => 100.0
-  :half => 50.0
-  :none => 0.0
+  full: 100.0
+  half: 50.0
+  none: 0.0
 
   def recuperaPorDatas(dataInicio, dataTermino)
   	pack(TimeEntry.where("spent_on >= :start_date and spent_on <= :end_date", 
