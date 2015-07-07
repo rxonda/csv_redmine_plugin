@@ -23,7 +23,7 @@ class ExporterController < ApplicationController
   		flash[:error] = 'Data de início não pode ser maior que a Data de término!'
   		return
   	end
-  	@timeEntries = recuperaPorDatas params[:dataInicio], params[:dataTermino]
+  	@timeEntries = recuperaPorDatas
   	if @timeEntries.empty?
   		flash[:warning] = 'Nenhum registro encontrado!'
   	else
@@ -41,9 +41,9 @@ class ExporterController < ApplicationController
 
   private
 
-  def recuperaPorDatas(dataInicio, dataTermino)
+  def recuperaPorDatas
   	pack(TimeEntry.where("spent_on >= :start_date and spent_on <= :end_date", 
-		{start_date: dataInicio, end_date: dataTermino}))
+		{start_date: @inicio, end_date: @fim}))
   end
 
   def recuperaTodos
