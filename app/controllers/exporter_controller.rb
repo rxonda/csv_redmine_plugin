@@ -98,13 +98,6 @@ class ExporterController < ApplicationController
   end
 
   def consolida(entry)
-    _key = [
-      entry[:data],
-      entry[:matricula],
-      entry[:objetoCusto],
-      entry[:atividade]
-    ]
-
     _keyDataMatricula = [
       entry[:data],
       entry[:matricula]
@@ -116,14 +109,21 @@ class ExporterController < ApplicationController
       :lancamentos => []
     })[:total] += entry[:qtd]
 
+    _key = [
+      entry[:data],
+      entry[:matricula],
+      entry[:objetoCusto],
+      entry[:atividade]
+    ]
+
     if !@consolidado[_key]
+      @consolidado[_key] = entry
+
       @timeEntries << entry
 
       @porDataMatricula[_keyDataMatricula][:lancamentos] << entry
-
-      @consolidado[_key] = entry
     else
-      @consolidado[_key][:qtd]+=entry[:horaExtra]
+      @consolidado[_key][:qtd]+=entry[:qtd]
     end
   end
 
