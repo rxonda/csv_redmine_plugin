@@ -1,6 +1,6 @@
 <h2>Timesheet</h2>
 <fieldset>
-	<legend>Filtro:</legend>
+	<legend>Filtro</legend>
 <%= form_tag({controller: "exporter", action: "export", format: 'csv'}, method: "get") do %>
   <%= label_tag(:dataInicio, "Data de início do período:") %>
   <%= text_field_tag(:dataInicio) %>
@@ -9,18 +9,6 @@
   <%= submit_tag("Gerar arquivo") %>
 <% end %>
 </fieldset>
-<p>
-<% if !@timeEntries.blank? %>
-<h3>Lançamentos de <%= @inicio %> até <%= @fim %></h3>
-<ul>
-	<% @timeEntries.each do |t| %>
-	  <li>
-	  	<%= "#{t[:centroCusto]}, #{t[:matricula]}, #{t[:cargo]}, #{t[:atividade]}, #{'%.2f' % t[:qtd]}, #{'%.2f' % t[:horaExtra]}, #{t[:objetoCusto]}" %>
-	  </li>
-	<% end %>
-</ul>
-<% end %>
-</p>
 <script src="/javascripts/i18n/datepicker-pt-BR.js?1431245373" type="text/javascript"></script>
 <script type="text/javascript">
 //<![CDATA[
