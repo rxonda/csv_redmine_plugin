@@ -63,9 +63,10 @@ class ExporterController < ApplicationController
 
   private
 
-  def recuperaPorDatas(dataInicio, dataTermino)
+  def recuperaPorDatas(dataInicio, dataTermino, &block)
+    callback = block
   	TimeEntry.where("spent_on >= :start_date and spent_on <= :end_date", 
-		{start_date: dataInicio, end_date: dataTermino}).each {|t| yield t}
+		{start_date: dataInicio, end_date: dataTermino}).each {|t| callback.call t}
   end
 
   def pack(e)
