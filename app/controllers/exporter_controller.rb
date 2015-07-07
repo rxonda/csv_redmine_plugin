@@ -28,8 +28,12 @@ class ExporterController < ApplicationController
     @timeEntries = []
     @consolidado = {}
     @porDataMatricula = {}
-    
-  	recuperaPorDatas(_inicio,_fim) {|t| pack t}
+
+  	recuperaPorDatas(_inicio,_fim) {|t| 
+      pack(t) {|v|
+        consolida(v)
+      }
+    }
 
     @porDataMatricula.each do |chave, valor|
       if valor[:tipo] == 0.0 && valor[:total] > 8.0
@@ -65,10 +69,12 @@ class ExporterController < ApplicationController
   def recuperaPorDatas(dataInicio, dataTermino, &block)
     callback = block
   	TimeEntry.where("spent_on >= :start_date and spent_on <= :end_date", 
-		{start_date: dataInicio, end_date: dataTermino}).each {|t| callback.call t}
+		{start_date: dataInicio, end_date: dataTermino}).each {|t| 
+      callback.call(t)
+    }
   end
 
-  def pack(e)
+  def pack(e, &block)
   	customFieldCentroCusto = CustomField.where(type: 'UserCustomField', name: 'Centro de Custo').first
   	customFieldMatricula = CustomField.where(type: 'UserCustomField', name: 'Matrícula').first
   	customFieldCargo = CustomField.where(type: 'UserCustomField', name: 'Cargo').first
@@ -84,44 +90,48 @@ class ExporterController < ApplicationController
     _qtdHoras = e.hours
     _horaExtra = calculateExtraTime(_data)
 
+    callback = block
+    callback.call({
+      :data => _data
+      :objetoCusto => _objetoCusto,
+      :centroCusto => _user.custom_value_for(customFieldCentroCusto).value.split(' - ').first,
+      :matricula => _matricula,
+      :cargo => _user.custom_value_for(customFieldCargo).value.split(' - ').first,
+      :qtd => _qtdHoras,
+      :atividade => _atividade,
+      :horaExtra => _horaExtra
+    })
+
+  end
+
+  def consolida(entry)
     _key = [
-      _data,
-      _matricula,
-      _objetoCusto,
-      _atividade
+      entry[:data],
+      entry[:matricula],
+      entry[:objetoCusto],
+      entry[:atividade]
     ]
 
     _keyDataMatricula = [
-      _data,
-      _matricula
+      entry[:data],
+      entry[:matricula]
     ]
 
     (@porDataMatricula[_keyDataMatricula] ||= {
       :total => 0.0,
-      :tipo => _horaExtra,
+      :tipo => entry[:horaExtra],
       :lancamentos => []
-    })[:total] += _qtdHoras
+    })[:total] += entry[:qtd]
 
     if !@consolidado[_key]
-      _temp = {
-        :objetoCusto => _objetoCusto,
-        :centroCusto => _user.custom_value_for(customFieldCentroCusto).value.split(' - ').first,
-        :matricula => _matricula,
-        :cargo => _user.custom_value_for(customFieldCargo).value.split(' - ').first,
-        :qtd => _qtdHoras,
-        :atividade => _atividade,
-        :horaExtra => _horaExtra
-      }
+      @timeEntries << entry
 
-      @timeEntries << _temp
+      @porDataMatricula[_keyDataMatricula][:lancamentos] << entry
 
-      @porDataMatricula[_keyDataMatricula][:lancamentos] << _temp
-
-      @consolidado[_key] = _temp
+      @consolidado[_key] = entry
     else
-      @consolidado[_key][:qtd]+=e.hours
+      @consolidado[_key][:qtd]+=entry[:horaExtra]
     end
-
   end
 
   def calculateExtraTime(data)
