@@ -110,7 +110,7 @@ class ExporterController < ApplicationController
           novaEntrada = l.clone
           l[:qtd] = razao * 8.0
           novaEntrada[:qtd] = razao * qtdExtra
-          novaEntrada[:horaExtra] = 0.5
+          novaEntrada[:horaExtra] = 50.0
           _encontrados.push novaEntrada          
         end
       end
@@ -120,13 +120,13 @@ class ExporterController < ApplicationController
 
   def calculateExtraTime(data)
     if data.sunday?
-      return 1.0
+      return 100.0
     end
     if data.holiday?(Holidays::TIPOS_FERIADOS)
-      return 1.0
+      return 100.0
     end
     if data.saturday?
-      return 0.5
+      return 50.0
     end
     return 0.0
   end
