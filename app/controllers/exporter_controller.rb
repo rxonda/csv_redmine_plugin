@@ -26,7 +26,6 @@ class ExporterController < ApplicationController
   	end
 
     @timeEntries = []
-    @consolidado = {}
     @porDataMatricula = {}
 
   	recuperaPorDatas(_inicio,_fim) {|t| 
@@ -38,10 +37,10 @@ class ExporterController < ApplicationController
     @porDataMatricula.each do |chave, valor|
       if valor[:tipo] == 0.0 && valor[:total] > 8.0
         qtdExtra = valor[:total] - 8.0
-        valor[:lancamentos].each do |l|
-          razao = l[:qtd] / valor[:total]
-          novaEntrada = l.clone
-          l[:qtd] = razao * 8.0
+        valor[:lancamentos].each do |k,v|
+          razao = v[:qtd] / valor[:total]
+          novaEntrada = v.clone
+          v[:qtd] = razao * 8.0
           novaEntrada[:qtd] = razao * qtdExtra
           novaEntrada[:horaExtra] = 50.0
           @timeEntries << novaEntrada          
@@ -106,25 +105,21 @@ class ExporterController < ApplicationController
     (@porDataMatricula[_keyDataMatricula] ||= {
       :total => 0.0,
       :tipo => entry[:horaExtra],
-      :lancamentos => []
+      :lancamentos => {}
     })[:total] += entry[:qtd]
 
     _key = [
-      entry[:data],
-      entry[:matricula],
       entry[:objetoCusto],
       entry[:atividade]
     ]
 
-    if !@consolidado[_key]
-      @consolidado[_key] = entry
-
+    if !@porDataMatricula[_keyDataMatricula][:lancamentos][_key]
+      @porDataMatricula[_keyDataMatricula][:lancamentos][_key] = entry
       @timeEntries << entry
-
-      @porDataMatricula[_keyDataMatricula][:lancamentos] << entry
     else
-      @consolidado[_key][:qtd]+=entry[:qtd]
+      @porDataMatricula[_keyDataMatricula][:lancamentos][_key][:qtd]+=entry[:qtd]
     end
+
   end
 
   def calculateExtraTime(data)
