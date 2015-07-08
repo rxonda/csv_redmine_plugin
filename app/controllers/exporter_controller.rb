@@ -48,10 +48,20 @@ class ExporterController < ApplicationController
               @timeEntries << novaEntrada          
             end
           end
-          v[:horaExtra] = 0.0
+          valor[:lancamentos].each do |k,v|
+            v[:horaExtra] = 0.0
+          end
         }, 
-        lambda {v[:horaExtra] = 50.0}, 
-        lambda {v[:horaExtra] = 100.0})
+        lambda {
+          valor[:lancamentos].each do |k,v|
+            v[:horaExtra] = 50.0
+          end
+          }, 
+        lambda {
+          valor[:lancamentos].each do |k,v|
+            v[:horaExtra] = 100.0
+          end
+          })
     end
 
   	if @timeEntries.empty?
