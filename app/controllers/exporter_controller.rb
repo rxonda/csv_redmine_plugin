@@ -35,8 +35,7 @@ class ExporterController < ApplicationController
     }
 
     @porDataMatricula.each do |chave, valor|
-      verifyExtraTime(chave[0],
-        lambda {
+      verifyExtraTime(chave[0], lambda {
           if valor[:total] > 8.0
             qtdExtra = valor[:total] - 8.0
             valor[:lancamentos].each do |k,v|
@@ -53,13 +52,11 @@ class ExporterController < ApplicationController
               v[:horaExtra] = 0.0
             end
           end
-        }, 
-        lambda {
+          }, lambda {
           valor[:lancamentos].each do |k,v|
             v[:horaExtra] = 50.0
           end
-          }, 
-        lambda {
+          }, lambda {
           valor[:lancamentos].each do |k,v|
             v[:horaExtra] = 100.0
           end
@@ -148,18 +145,5 @@ class ExporterController < ApplicationController
     else
       fnNormal.call
     end
-  end
-
-  def calculateExtraTime(data)
-    if data.sunday?
-      return 100.0
-    end
-    if data.holiday?(Holidays::TIPOS_FERIADOS)
-      return 100.0
-    end
-    if data.saturday?
-      return 50.0
-    end
-    return 0.0
   end
 end
