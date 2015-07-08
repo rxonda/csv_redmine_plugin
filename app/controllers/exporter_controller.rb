@@ -30,7 +30,7 @@ class ExporterController < ApplicationController
 
   	recuperaPorDatas(_inicio,_fim) {|t| 
       pack(t) {|v|
-        consolida(v)
+        consolida(v) {|e| @timeEntries << e}
       }
     }
 
@@ -96,7 +96,7 @@ class ExporterController < ApplicationController
     })
   end
 
-  def consolida(entry)
+  def consolida(entry, &block)
     _keyDataMatricula = [
       entry[:data],
       entry[:matricula]
@@ -112,10 +112,10 @@ class ExporterController < ApplicationController
       entry[:objetoCusto],
       entry[:atividade]
     ]
-
+    callback = block
     if !@porDataMatricula[_keyDataMatricula][:lancamentos][_key]
       @porDataMatricula[_keyDataMatricula][:lancamentos][_key] = entry
-      @timeEntries << entry
+      callback.call entry
     else
       @porDataMatricula[_keyDataMatricula][:lancamentos][_key][:qtd]+=entry[:qtd]
     end
