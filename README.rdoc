@@ -1,13 +1,24 @@
-Redmine Plugin to export TimeEntries with some custom fields
+= \Redmine Plugin to export TimeEntries with some custom fields
+
+home :: https://github.com/rxonda/csv_redmine_plugin
+
+== Description
+
 This plugin is for a particular use with specific Custom Fields.
 
-Instalation:
-Checkout the repository on <redmine-installation-dir>/plugins.
-Create at <redmine-installation-dir> the file Gemfile.local and specify the holiday lib on it:
-$ cd /<redmine-installation-dir>
-$ touch Gemfile.local
-$ echo "gem 'holidays'" >> Gemfile.local
-$ bundle install
+== Instalation
+
+Checkout the repository on [redmine-installation-dir]/plugins.
+
+Create at [redmine-installation-dir] the file Gemfile.local and specify the 
+holiday lib on it:
+
+	$ cd /[redmine-installation-dir]
+
+	$ touch Gemfile.local
+
+	$ echo "gem 'holidays'" >> Gemfile.local
+
+	$ bundle install
 
 This will install Holidays for extra time calculation on the export.
-
