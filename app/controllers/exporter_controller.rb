@@ -35,17 +35,23 @@ class ExporterController < ApplicationController
     }
 
     @porDataMatricula.each do |chave, valor|
-      if valor[:tipo] == 0.0 && valor[:total] > 8.0
-        qtdExtra = valor[:total] - 8.0
-        valor[:lancamentos].each do |k,v|
-          razao = v[:qtd] / valor[:total]
-          novaEntrada = v.clone
-          v[:qtd] = razao * 8.0
-          novaEntrada[:qtd] = razao * qtdExtra
-          novaEntrada[:horaExtra] = 50.0
-          @timeEntries << novaEntrada          
-        end
-      end
+      verifyExtraTime(chave[:data],
+        lambda {
+          if valor[:total] > 8.0
+            qtdExtra = valor[:total] - 8.0
+            valor[:lancamentos].each do |k,v|
+              razao = v[:qtd] / valor[:total]
+              novaEntrada = v.clone
+              v[:qtd] = razao * 8.0
+              novaEntrada[:qtd] = razao * qtdExtra
+              novaEntrada[:horaExtra] = 50.0
+              @timeEntries << novaEntrada          
+            end
+          end
+          v[:horaExtra] = 0.0
+        }, 
+        lambda {v[:horaExtra] = 50.0}, 
+        lambda {v[:horaExtra] = 100.0})
     end
 
   	if @timeEntries.empty?
@@ -91,8 +97,7 @@ class ExporterController < ApplicationController
       :matricula => _user.custom_value_for(customFieldMatricula).value,
       :cargo => _user.custom_value_for(customFieldCargo).value.split(' - ').first,
       :qtd => e.hours,
-      :atividade => e.activity.custom_value_for(customFieldCodigoSAP).value,
-      :horaExtra => calculateExtraTime(_data)
+      :atividade => e.activity.custom_value_for(customFieldCodigoSAP).value
     })
   end
 
@@ -112,14 +117,27 @@ class ExporterController < ApplicationController
       entry[:objetoCusto],
       entry[:atividade]
     ]
-    callback = block
+
     if !@porDataMatricula[_keyDataMatricula][:lancamentos][_key]
       @porDataMatricula[_keyDataMatricula][:lancamentos][_key] = entry
+      callback = block
       callback.call entry
     else
       @porDataMatricula[_keyDataMatricula][:lancamentos][_key][:qtd]+=entry[:qtd]
     end
 
+  end
+
+  def verifyExtraTime(data, fnNormal, fnHalf, fnFull)
+    if data.sunday?
+      fnFull.call
+    elsif data.holiday?(Holidays::TIPOS_FERIADOS)
+      fnFull.call
+    elsif data.saturday?
+      fnHalf.call
+    else
+      fnNormal
+    end
   end
 
   def calculateExtraTime(data)
