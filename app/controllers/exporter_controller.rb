@@ -145,7 +145,7 @@ class ExporterController < ApplicationController
     elsif data.saturday?
       fnHalf.call
     else
-      fnNormal
+      fnNormal.call
     end
   end
 
