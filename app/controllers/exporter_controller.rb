@@ -109,7 +109,6 @@ class ExporterController < ApplicationController
 
     (@porDataMatricula[_keyDataMatricula] ||= {
       :total => 0.0,
-      :tipo => entry[:horaExtra],
       :lancamentos => {}
     })[:total] += entry[:qtd]
 
