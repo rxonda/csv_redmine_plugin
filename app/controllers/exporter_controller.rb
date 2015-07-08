@@ -43,13 +43,15 @@ class ExporterController < ApplicationController
               razao = v[:qtd] / valor[:total]
               novaEntrada = v.clone
               v[:qtd] = razao * 8.0
+              v[:horaExtra] = 0.0
               novaEntrada[:qtd] = razao * qtdExtra
               novaEntrada[:horaExtra] = 50.0
               @timeEntries << novaEntrada          
             end
-          end
-          valor[:lancamentos].each do |k,v|
-            v[:horaExtra] = 0.0
+          else
+            valor[:lancamentos].each do |k,v|
+              v[:horaExtra] = 0.0
+            end
           end
         }, 
         lambda {
