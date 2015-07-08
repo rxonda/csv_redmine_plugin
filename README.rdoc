@@ -10,6 +10,8 @@ This plugin is for a particular use with specific Custom Fields.
 
 Checkout the repository on [redmine-installation-dir]/plugins.
 
+	$ git clone https://github.com/rxonda/csv_redmine_plugin.git
+
 Create at [redmine-installation-dir] the file Gemfile.local and specify the 
 holiday lib on it:
 
