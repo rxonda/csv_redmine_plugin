@@ -5,44 +5,37 @@ class ExporterController < ApplicationController
 
 
   def export
-  	if params[:dataInicio].blank? && params[:dataTermino].blank?
-    	return
-  	end
-  	if params[:dataInicio].blank?
-  		flash[:error] = 'Você deve informar a Data de início'
-  		return
-  	end
-  	if params[:dataTermino].blank?
-  		flash[:error] = 'Você deve informar a Data de término'
-  		return
-  	end
+    if params[:dataInicio].blank? && params[:dataTermino].blank?
+      return
+    end
+    if params[:dataInicio].blank?
+      flash[:error] = 'Você deve informar a Data de início'
+      return
+    end
+    if params[:dataTermino].blank?
+      flash[:error] = 'Você deve informar a Data de término'
+      return
+    end
 
-  	_inicio = Date.parse(params[:dataInicio])
-  	_fim = Date.parse(params[:dataTermino])
+    _inicio = Date.parse(params[:dataInicio])
+    _fim = Date.parse(params[:dataTermino])
 
-  	if _inicio > _fim
-  		flash[:error] = 'Data de início não pode ser maior que a Data de término!'
-  		return
-  	end
+    if _inicio > _fim
+      flash[:error] = 'Data de início não pode ser maior que a Data de término!'
+      return
+    end
 
     @timeEntries = []
     @porDataMatricula = {}
 
-  	recuperaPorDatas(_inicio,_fim) {|t| 
+    recuperaPorDatas(_inicio,_fim) {|t| 
       pack(t) {|v|
         consolida(v) {|e| @timeEntries << e}
       }
     }
 
     @porDataMatricula.each do |chave, valor|
-      _ddata = chave[:data]
-    end
-
-    @porDataMatricula.each do |chave, valor|
-
-      _ddata = chave[:data]
-
-      verifyExtraTime(chave[:data],
+      verifyExtraTime(chave[0],
         lambda {
           if valor[:total] > 8.0
             qtdExtra = valor[:total] - 8.0
@@ -71,36 +64,36 @@ class ExporterController < ApplicationController
           })
     end
 
-  	if @timeEntries.empty?
-  		flash[:warning] = 'Nenhum registro encontrado!'
-  	else
-  		respond_to do |format|
-  			format.html
-  			format.csv do
-  				_agora = DateTime.now
-  				filename = "TS_RCTI_#{_inicio.strftime('%Y%m%d')}I_#{_fim.strftime('%Y%m%d')}F_#{_agora.strftime('%Y%m%d')}G_#{_agora.strftime('%H%M%S')}G.CSV"
-  				headers['Content-Disposition'] = "attachment; filename=#{filename}"
-  				headers['content-Type'] ||= 'text/csv; charset=UTF-8; header=present'
-  			end
-  		end
-  	end
+    if @timeEntries.empty?
+      flash[:warning] = 'Nenhum registro encontrado!'
+    else
+      respond_to do |format|
+        format.html
+        format.csv do
+          _agora = DateTime.now
+          filename = "TS_RCTI_#{_inicio.strftime('%Y%m%d')}I_#{_fim.strftime('%Y%m%d')}F_#{_agora.strftime('%Y%m%d')}G_#{_agora.strftime('%H%M%S')}G.CSV"
+          headers['Content-Disposition'] = "attachment; filename=#{filename}"
+          headers['content-Type'] ||= 'text/csv; charset=UTF-8; header=present'
+        end
+      end
+    end
   end
 
   private
 
   def recuperaPorDatas(dataInicio, dataTermino, &block)
     callback = block
-  	TimeEntry.where("spent_on >= :start_date and spent_on <= :end_date", 
-		{start_date: dataInicio, end_date: dataTermino}).each {|t| 
+    TimeEntry.where("spent_on >= :start_date and spent_on <= :end_date", 
+    {start_date: dataInicio, end_date: dataTermino}).each {|t| 
       callback.call(t)
     }
   end
 
   def pack(e, &block)
-  	customFieldCentroCusto = CustomField.where(type: 'UserCustomField', name: 'Centro de Custo').first
-  	customFieldMatricula = CustomField.where(type: 'UserCustomField', name: 'Matrícula').first
-  	customFieldCargo = CustomField.where(type: 'UserCustomField', name: 'Cargo').first
-  	customFieldObjetoCusto = CustomField.where(type: 'ProjectCustomField', name: 'Centro de Custo').first
+    customFieldCentroCusto = CustomField.where(type: 'UserCustomField', name: 'Centro de Custo').first
+    customFieldMatricula = CustomField.where(type: 'UserCustomField', name: 'Matrícula').first
+    customFieldCargo = CustomField.where(type: 'UserCustomField', name: 'Cargo').first
+    customFieldObjetoCusto = CustomField.where(type: 'ProjectCustomField', name: 'Centro de Custo').first
     customFieldCodigoSAP = CustomField.where(type: "TimeEntryActivityCustomField", name: 'Código SAP').first
 
     _user = e.user
