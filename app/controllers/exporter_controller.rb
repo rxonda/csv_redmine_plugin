@@ -35,9 +35,13 @@ class ExporterController < ApplicationController
     }
 
     @porDataMatricula.each do |chave, valor|
+      _ddata = chave[:data]
+    end
+
+    @porDataMatricula.each do |chave, valor|
 
       _ddata = chave[:data]
-      
+
       verifyExtraTime(chave[:data],
         lambda {
           if valor[:total] > 8.0
@@ -100,11 +104,10 @@ class ExporterController < ApplicationController
     customFieldCodigoSAP = CustomField.where(type: "TimeEntryActivityCustomField", name: 'Código SAP').first
 
     _user = e.user
-    _data = e.spent_on
 
     callback = block
     callback.call({
-      :data => _data,
+      :data => e.spent_on,
       :objetoCusto => e.project.custom_value_for(customFieldObjetoCusto).value,
       :centroCusto => _user.custom_value_for(customFieldCentroCusto).value.split(' - ').first,
       :matricula => _user.custom_value_for(customFieldMatricula).value,
