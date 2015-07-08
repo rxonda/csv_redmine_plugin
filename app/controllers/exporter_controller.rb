@@ -35,6 +35,9 @@ class ExporterController < ApplicationController
     }
 
     @porDataMatricula.each do |chave, valor|
+
+      _ddata = chave[:data]
+      
       verifyExtraTime(chave[:data],
         lambda {
           if valor[:total] > 8.0
