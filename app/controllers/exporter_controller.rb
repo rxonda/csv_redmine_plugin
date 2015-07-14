@@ -39,8 +39,8 @@ class ExporterController < ApplicationController
       return
     end
 
-    _inicio = Date.parse(dataInicio)
-    _fim = Date.parse(dataTermino)
+    _inicio = Date.strptime(dataInicio,'%d/%m/%Y')
+    _fim = Date.strptime(dataTermino,'%d/%m/%Y')
 
     if _inicio > _fim
       fnFail.call('Data de início não pode ser maior que a Data de término!')
