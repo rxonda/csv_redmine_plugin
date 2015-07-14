@@ -7,7 +7,7 @@ class ExporterController < ApplicationController
   def export
     @timeEntries = []
     if params[:dataInicio].blank? && params[:dataTermino].blank?
-      render csv_export_path
+      render :template => 'exporter/export.html.erb'
       return
     end
     if params[:dataInicio].blank?
