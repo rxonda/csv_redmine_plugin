@@ -8,25 +8,44 @@ class ExporterController < ApplicationController
   end
 
   def export
-    if params[:dataInicio].blank? && params[:dataTermino].blank?
-      flash[:error] = 'Você deve informar a Data de início e a Data de término'
-      redirect_to exporter_timesheet_path
+    execute(params[:dataInicio], params[:dataTermino],
+      lambda{|msg|
+        flash[:error] = msg
+        redirect_to exporter_timesheet_path
+        }, lambda{
+      respond_to do |format|
+        format.html
+        format.csv do
+          _agora = DateTime.now
+          filename = "TS_RCTI_#{_inicio.strftime('%Y%m%d')}I_#{_fim.strftime('%Y%m%d')}F_#{_agora.strftime('%Y%m%d')}G_#{_agora.strftime('%H%M%S')}G.CSV"
+          headers['Content-Disposition'] = "attachment; filename=#{filename}"
+          headers['content-Type'] ||= 'text/csv; charset=UTF-8; header=present'
+        end
+      end})
+  end
+
+  private
+
+  def execute(dataInicio, dataTermino, fnSuccess, fnFail)
+    if dataInicio.blank? && dataTermino.blank?
+      fnFail.call('Você deve informar a Data de início e a Data de término')
+      return
     end
-    if params[:dataInicio].blank?
-      flash[:error] = 'Você deve informar a Data de início'
-      redirect_to exporter_timesheet_path
+    if dataInicio.blank?
+      fnFail.call('Você deve informar a Data de início')
+      return
     end
-    if params[:dataTermino].blank?
-      flash[:error] = 'Você deve informar a Data de término'
-      redirect_to exporter_timesheet_path
+    if dataTermino.blank?
+      fnFail.call('Você deve informar a Data de término')
+      return
     end
 
-    _inicio = Date.parse(params[:dataInicio])
-    _fim = Date.parse(params[:dataTermino])
+    _inicio = Date.parse(dataInicio)
+    _fim = Date.parse(dataTermino)
 
     if _inicio > _fim
-      flash[:error] = 'Data de início não pode ser maior que a Data de término!'
-      redirect_to exporter_timesheet_path
+      fnFail.call('Data de início não pode ser maior que a Data de término!')
+      return
     end
 
     @timeEntries = []
@@ -68,22 +87,11 @@ class ExporterController < ApplicationController
     end
 
     if @timeEntries.empty?
-      flash[:warning] = 'Nenhum registro encontrado!'
-      redirect_to exporter_timesheet_path
+      fnFail.call('Nenhum registro encontrado!')
     else
-      respond_to do |format|
-        format.html
-        format.csv do
-          _agora = DateTime.now
-          filename = "TS_RCTI_#{_inicio.strftime('%Y%m%d')}I_#{_fim.strftime('%Y%m%d')}F_#{_agora.strftime('%Y%m%d')}G_#{_agora.strftime('%H%M%S')}G.CSV"
-          headers['Content-Disposition'] = "attachment; filename=#{filename}"
-          headers['content-Type'] ||= 'text/csv; charset=UTF-8; header=present'
-        end
-      end
+      fnSuccess.call
     end
   end
-
-  private
 
   def recuperaPorDatas(dataInicio, dataTermino, &block)
     callback = block
