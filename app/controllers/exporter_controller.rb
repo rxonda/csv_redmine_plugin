@@ -8,11 +8,7 @@ class ExporterController < ApplicationController
   end
 
   def export
-    execute(params[:dataInicio], params[:dataTermino],
-      lambda{|msg|
-        flash[:error] = msg
-        redirect_to exporter_timesheet_path
-        }, lambda{
+    execute(params[:dataInicio], params[:dataTermino], lambda{
       respond_to do |format|
         format.html
         format.csv do
@@ -21,7 +17,11 @@ class ExporterController < ApplicationController
           headers['Content-Disposition'] = "attachment; filename=#{filename}"
           headers['content-Type'] ||= 'text/csv; charset=UTF-8; header=present'
         end
-      end})
+      end},
+      lambda{|msg|
+        flash[:error] = msg
+        redirect_to exporter_timesheet_path
+        })
   end
 
   private
