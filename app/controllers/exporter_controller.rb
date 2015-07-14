@@ -5,7 +5,9 @@ class ExporterController < ApplicationController
 
 
   def export
+    @timeEntries = []
     if params[:dataInicio].blank? && params[:dataTermino].blank?
+      render csv_export_path
       return
     end
     if params[:dataInicio].blank?
@@ -25,7 +27,6 @@ class ExporterController < ApplicationController
       return
     end
 
-    @timeEntries = []
     @porDataMatricula = {}
 
     recuperaPorDatas(_inicio,_fim) {|t| 
