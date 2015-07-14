@@ -9,8 +9,8 @@ class ExporterController < ApplicationController
 
   def export
     if params[:dataInicio].blank? && params[:dataTermino].blank?
-      redirect_to(exporter_timesheet_path,
-        :error => ['Você deve informar a Data de início', 'Você deve informar a Data de término'])
+      flash[:error] = ['Você deve informar a Data de início', 'Você deve informar a Data de término']
+      redirect_to(exporter_timesheet_path)
       return
     end
     if params[:dataInicio].blank?
