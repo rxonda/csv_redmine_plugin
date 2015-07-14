@@ -94,7 +94,7 @@ class ExporterController < ApplicationController
   end
 
   def recuperaPorDatas(dataInicio, dataTermino)
-    TimeEntry.where("spent_on >= :start_date and spent_on <= :end_date", {:start_date => dataInicio, :end_date => dataTermino})
+    TimeEntry.where("spent_on=:dates", {:dates=>(dataInicio..dataTermino)})
   end
 
   def pack(e, &block)
