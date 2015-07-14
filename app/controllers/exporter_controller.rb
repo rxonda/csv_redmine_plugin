@@ -8,7 +8,7 @@ class ExporterController < ApplicationController
   end
 
   def export
-    execute(params[:dataInicio], params[:dataTermino], lambda{
+    execute(params[:dataInicio], params[:dataTermino], lambda{|_inicio,_fim|
       respond_to do |format|
         format.html
         format.csv do
@@ -89,7 +89,7 @@ class ExporterController < ApplicationController
     if @timeEntries.empty?
       fnFail.call('Nenhum registro encontrado!')
     else
-      fnSuccess.call
+      fnSuccess.call(_inicio, _fim)
     end
   end
 
