@@ -51,11 +51,11 @@ class ExporterController < ApplicationController
     @timeEntries = []
     @porDataMatricula = {}
 
-    recuperaPorDatas(_inicio,_fim) {|t| 
+    recuperaPorDatas(_inicio,_fim).each do |t| 
       pack(t) {|v|
         consolida(v) {|e| @timeEntries << e}
       }
-    }
+    end
 
     @porDataMatricula.each do |chave, valor|
       verifyExtraTime(chave[0], lambda {
@@ -93,12 +93,8 @@ class ExporterController < ApplicationController
     end
   end
 
-  def recuperaPorDatas(dataInicio, dataTermino, &block)
-    callback = block
-    TimeEntry.where("spent_on >= :start_date and spent_on <= :end_date", 
-    {:start_date => dataInicio, :end_date => dataTermino}).each {|t| 
-      callback.call(t)
-    }
+  def recuperaPorDatas(dataInicio, dataTermino)
+    TimeEntry.where("spent_on >= :start_date and spent_on <= :end_date", {:start_date => dataInicio, :end_date => dataTermino})
   end
 
   def pack(e, &block)
