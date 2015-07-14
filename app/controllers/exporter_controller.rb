@@ -10,16 +10,15 @@ class ExporterController < ApplicationController
   def export
     if params[:dataInicio].blank? && params[:dataTermino].blank?
       flash[:error] = 'Você deve informar a Data de início e a Data de término'
-      redirect_to(exporter_timesheet_path)
-      return
+      redirect_to exporter_timesheet_path
     end
     if params[:dataInicio].blank?
       flash[:error] = 'Você deve informar a Data de início'
-      return
+      redirect_to exporter_timesheet_path
     end
     if params[:dataTermino].blank?
       flash[:error] = 'Você deve informar a Data de término'
-      return
+      redirect_to exporter_timesheet_path
     end
 
     _inicio = Date.parse(params[:dataInicio])
@@ -27,7 +26,7 @@ class ExporterController < ApplicationController
 
     if _inicio > _fim
       flash[:error] = 'Data de início não pode ser maior que a Data de término!'
-      return
+      redirect_to exporter_timesheet_path
     end
 
     @timeEntries = []
@@ -70,6 +69,7 @@ class ExporterController < ApplicationController
 
     if @timeEntries.empty?
       flash[:warning] = 'Nenhum registro encontrado!'
+      redirect_to exporter_timesheet_path
     else
       respond_to do |format|
         format.html
