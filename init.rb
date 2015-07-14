@@ -8,5 +8,5 @@ Redmine::Plugin.register :csv_redmine_plugin do
   url 'https://github.com/rxonda/csv_redmine_plugin'
   author_url 'https://github.com/rxonda'
 
-  menu :application_menu, :exporter, { :controller => 'exporter', :action => 'export' }, :caption => 'Exportação'
+  menu :application_menu, :exporter, { :controller => 'exporter', :action => 'index' }, :caption => 'Exportação'
 end
