@@ -83,17 +83,17 @@ class ExporterController < ApplicationController
   def recuperaPorDatas(dataInicio, dataTermino, &block)
     callback = block
     TimeEntry.where("spent_on >= :start_date and spent_on <= :end_date", 
-    {start_date: dataInicio, end_date: dataTermino}).each {|t| 
+    {:start_date => dataInicio, :end_date => dataTermino}).each {|t| 
       callback.call(t)
     }
   end
 
   def pack(e, &block)
-    customFieldCentroCusto = CustomField.where(type: 'UserCustomField', name: 'Centro de Custo').first
-    customFieldMatricula = CustomField.where(type: 'UserCustomField', name: 'Matrícula').first
-    customFieldCargo = CustomField.where(type: 'UserCustomField', name: 'Cargo').first
-    customFieldObjetoCusto = CustomField.where(type: 'ProjectCustomField', name: 'Centro de Custo').first
-    customFieldCodigoSAP = CustomField.where(type: "TimeEntryActivityCustomField", name: 'Código SAP').first
+    customFieldCentroCusto = CustomField.where(:type => 'UserCustomField', :name => 'Centro de Custo').first
+    customFieldMatricula = CustomField.where(:type => 'UserCustomField', :name => 'Matrícula').first
+    customFieldCargo = CustomField.where(:type => 'UserCustomField', :name => 'Cargo').first
+    customFieldObjetoCusto = CustomField.where(:type => 'ProjectCustomField', :name => 'Centro de Custo').first
+    customFieldCodigoSAP = CustomField.where(:type => "TimeEntryActivityCustomField", :name => 'Código SAP').first
 
     _user = e.user
 
@@ -132,7 +132,6 @@ class ExporterController < ApplicationController
     else
       @porDataMatricula[_keyDataMatricula][:lancamentos][_key][:qtd]+=entry[:qtd]
     end
-
   end
 
   def verifyExtraTime(data, fnNormal, fnHalf, fnFull)
