@@ -3,11 +3,14 @@ require 'csv'
 class ExporterController < ApplicationController
   unloadable
 
+  def index
+    render :template => 'exporter/export.html.erb'
+  end
 
   def export
-    @timeEntries = []
     if params[:dataInicio].blank? && params[:dataTermino].blank?
-      render :template => 'exporter/export.html.erb'
+      redirect_to(exporter_path,
+        :error => ['Você deve informar a Data de início', 'Você deve informar a Data de término'])
       return
     end
     if params[:dataInicio].blank?
@@ -27,6 +30,7 @@ class ExporterController < ApplicationController
       return
     end
 
+    @timeEntries = []
     @porDataMatricula = {}
 
     recuperaPorDatas(_inicio,_fim) {|t| 
