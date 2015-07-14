@@ -17,8 +17,7 @@ class ExporterController < ApplicationController
           headers['Content-Disposition'] = "attachment; filename=#{filename}"
           headers['content-Type'] ||= 'text/csv; charset=UTF-8; header=present'
         end
-      end},
-      lambda{|msg|
+      end}, lambda{|msg|
         flash[:error] = msg
         redirect_to exporter_timesheet_path
         })
