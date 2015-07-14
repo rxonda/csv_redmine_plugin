@@ -50,7 +50,7 @@ class ExporterController < ApplicationController
     @timeEntries = []
     @porDataMatricula = {}
 
-    recuperaPorDatas(_inicio,_fim).each do |t| 
+    TimeEntry.where(:spent_on=>(_inicio.._fim)).each do |t| 
       pack(t) {|v|
         consolida(v) {|e| @timeEntries << e}
       }
@@ -90,10 +90,6 @@ class ExporterController < ApplicationController
     else
       fnSuccess.call(_inicio, _fim)
     end
-  end
-
-  def recuperaPorDatas(dataInicio, dataTermino)
-    TimeEntry.where(:spent_on=>(dataInicio..dataTermino))
   end
 
   def pack(e, &block)
