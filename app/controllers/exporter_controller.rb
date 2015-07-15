@@ -96,9 +96,7 @@ class ExporterController < ApplicationController
   end
 
   def pack(e, &block)
-    retorno = {:data => e.spent_on,
-      :qtd => e.hours
-    }
+    retorno = {:data => e.spent_on, :qtd => e.hours}
     getCustomFieldValue(e.project,'ProjectCustomField', 'Centro de Custo') {|v| retorno[:objetoCusto]=v}
     getCustomFieldValue(e.activity,'TimeEntryActivityCustomField','Código SAP'){|v| retorno[:atividade]=v}
     getCustomFieldValue(e.user,'UserCustomField','Matrícula') {|v| retorno[:matricula]=v}
@@ -153,11 +151,11 @@ class ExporterController < ApplicationController
   end
 
   def verifyExtraTime(data, fnNormal, fnHalf, fnFull)
-    if data.sunday?
+    if data === data.sunday
       fnFull.call
     elsif data.holiday?(Holidays::TIPOS_FERIADOS)
       fnFull.call
-    elsif data.saturday?
+    elsif data === data.saturday
       fnHalf.call
     else
       fnNormal.call
