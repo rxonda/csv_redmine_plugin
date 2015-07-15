@@ -52,7 +52,9 @@ class ExporterController < ApplicationController
 
     TimeEntry.where(:spent_on=>(_inicio.._fim)).each do |t| 
       pack(t) {|v|
-        consolida(v) {|e| @timeEntries << e}
+        normaliza(v) {|z|
+          consolida(z) {|e| @timeEntries << e}
+        }
       }
     end
 
@@ -93,11 +95,6 @@ class ExporterController < ApplicationController
   end
 
   def pack(e, &block)
-    # customFieldCentroCusto = CustomField.where(:type => 'UserCustomField', :name => 'Centro de Custo').first
-    # customFieldMatricula = CustomField.where(:type => 'UserCustomField', :name => 'Matrícula').first
-    # customFieldCargo = CustomField.where(:type => 'UserCustomField', :name => 'Cargo').first
-    # customFieldObjetoCusto = CustomField.where(:type => 'ProjectCustomField', :name => 'Centro de Custo').first
-    # customFieldCodigoSAP = CustomField.where(:type => "TimeEntryActivityCustomField", :name => 'Código SAP').first
     retorno = {:data => e.spent_on,
       :qtd => e.hours
     }
@@ -108,6 +105,15 @@ class ExporterController < ApplicationController
     getCustomFieldValue(e.activity,'TimeEntryActivityCustomField','Código SAP'){|v| retorno[:atividade]=v}
     callback = block
     callback.call(retorno)
+  end
+
+  def normaliza(e, &block)
+    e[:objetoCusto]||=(e[:centroCusto]||='N/A')
+    e[:matricula]||='N/A'
+    e[:cargo]||='N/A'
+    e[:atividade]||='N/A'
+    callback=block
+    callback.call e
   end
 
   def getCustomFieldValue(_model,_type,_name,&block)
