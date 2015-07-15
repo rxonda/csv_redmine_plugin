@@ -112,7 +112,9 @@ class ExporterController < ApplicationController
     e[:matricula]||='N/A'
     e[:cargo]||='N/A'
     e[:atividade]||='N/A'
-    e[:objetoCusto]||=e[:centroCusto]
+    if e[:objetoCusto].blank?
+      e[:objetoCusto]=e[:centroCusto]
+    end
     callback=block
     callback.call e
   end
