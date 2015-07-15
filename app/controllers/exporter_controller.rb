@@ -112,8 +112,8 @@ class ExporterController < ApplicationController
   end
 
   def getCustomFieldValue(_model,_type,_name)
-    _customField = CustomField.where(:type => _type, :name => _name).take(1).each do |z|
-      _retorno = _model.custom_value_for(_customField).value
+    CustomField.where(:type => _type, :name => _name).take(1).each do |customField|
+      _retorno = _model.custom_value_for(customField).value
     end
     _retorno||'N\A'
   end
