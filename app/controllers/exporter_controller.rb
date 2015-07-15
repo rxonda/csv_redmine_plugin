@@ -98,24 +98,23 @@ class ExporterController < ApplicationController
     # customFieldCargo = CustomField.where(:type => 'UserCustomField', :name => 'Cargo').first
     # customFieldObjetoCusto = CustomField.where(:type => 'ProjectCustomField', :name => 'Centro de Custo').first
     # customFieldCodigoSAP = CustomField.where(:type => "TimeEntryActivityCustomField", :name => 'Código SAP').first
-
+    retorno = {:data => e.spent_on,
+      :qtd => e.hours
+    }
+    getCustomFieldValue(e.project,'ProjectCustomField', 'Centro de Custo') {|v| retorno[:objetoCusto]=v}
+    getCustomFieldValue(e.user,'UserCustomField','Centro de Custo') {|v| retorno[:centroCusto]=v.split(' - ').first}
+    getCustomFieldValue(e.user,'UserCustomField','Matrícula') {|v| retorno[:matricula]=v}
+    getCustomFieldValue(e.user,'UserCustomField','Cargo'){|v| retorno[:cargo] = v.split(' - ').first}
+    getCustomFieldValue(e.activity,'TimeEntryActivityCustomField','Código SAP'){|v| retorno[:atividade]=v}
     callback = block
-    callback.call({
-      :data => e.spent_on,
-      :objetoCusto => getCustomFieldValue(e.project,'ProjectCustomField', 'Centro de Custo'),
-      :centroCusto => getCustomFieldValue(e.user,'UserCustomField','Centro de Custo').split(' - ').first,
-      :matricula => getCustomFieldValue(e.user,'UserCustomField','Matrícula'),
-      :cargo => getCustomFieldValue(e.user,'UserCustomField','Cargo').split(' - ').first,
-      :qtd => e.hours,
-      :atividade => getCustomFieldValue(e.activity,'TimeEntryActivityCustomField','Código SAP')
-    })
+    callback.call(retorno)
   end
 
-  def getCustomFieldValue(_model,_type,_name)
+  def getCustomFieldValue(_model,_type,_name,&block)
+    callback = block
     CustomField.where(:type => _type, :name => _name).take(1).each do |customField|
-      _retorno = _model.custom_value_for(customField).value
+      callback.call(_model.custom_value_for(customField).value)
     end
-    _retorno||'N\A'
   end
 
   def consolida(entry, &block)
