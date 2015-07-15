@@ -93,24 +93,29 @@ class ExporterController < ApplicationController
   end
 
   def pack(e, &block)
-    customFieldCentroCusto = CustomField.where(:type => 'UserCustomField', :name => 'Centro de Custo').first
-    customFieldMatricula = CustomField.where(:type => 'UserCustomField', :name => 'Matrícula').first
-    customFieldCargo = CustomField.where(:type => 'UserCustomField', :name => 'Cargo').first
-    customFieldObjetoCusto = CustomField.where(:type => 'ProjectCustomField', :name => 'Centro de Custo').first
-    customFieldCodigoSAP = CustomField.where(:type => "TimeEntryActivityCustomField", :name => 'Código SAP').first
-
-    _user = e.user
+    # customFieldCentroCusto = CustomField.where(:type => 'UserCustomField', :name => 'Centro de Custo').first
+    # customFieldMatricula = CustomField.where(:type => 'UserCustomField', :name => 'Matrícula').first
+    # customFieldCargo = CustomField.where(:type => 'UserCustomField', :name => 'Cargo').first
+    # customFieldObjetoCusto = CustomField.where(:type => 'ProjectCustomField', :name => 'Centro de Custo').first
+    # customFieldCodigoSAP = CustomField.where(:type => "TimeEntryActivityCustomField", :name => 'Código SAP').first
 
     callback = block
     callback.call({
       :data => e.spent_on,
-      :objetoCusto => e.project.custom_value_for(customFieldObjetoCusto).value,
-      :centroCusto => _user.custom_value_for(customFieldCentroCusto).value.split(' - ').first,
-      :matricula => _user.custom_value_for(customFieldMatricula).value,
-      :cargo => _user.custom_value_for(customFieldCargo).value.split(' - ').first,
+      :objetoCusto => getCustomFieldValue(e.project,'ProjectCustomField', 'Centro de Custo'),
+      :centroCusto => getCustomFieldValue(e.user,'UserCustomField','Centro de Custo').split(' - ').first,
+      :matricula => getCustomFieldValue(e.user,'UserCustomField','Matrícula'),
+      :cargo => getCustomFieldValue(e.user,'UserCustomField','Cargo').split(' - ').first,
       :qtd => e.hours,
-      :atividade => e.activity.custom_value_for(customFieldCodigoSAP).value
+      :atividade => getCustomFieldValue(e.activity,'TimeEntryActivityCustomField','Código SAP')
     })
+  end
+
+  def getCustomFieldValue(_model,_type,_name)
+    _customField = CustomField.where(:type => _type, :name => _name).take(1).each do |z|
+      _retorno = _model.custom_value_for(_customField).value
+    end
+    _retorno||'N\A'
   end
 
   def consolida(entry, &block)
