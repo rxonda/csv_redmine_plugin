@@ -108,10 +108,11 @@ class ExporterController < ApplicationController
   end
 
   def normaliza(e, &block)
-    e[:objetoCusto]||=(e[:centroCusto]||='N/A')
+    e[:centroCusto]||='N/A'
     e[:matricula]||='N/A'
     e[:cargo]||='N/A'
     e[:atividade]||='N/A'
+    e[:objetoCusto]||=e[:centroCusto]
     callback=block
     callback.call e
   end
