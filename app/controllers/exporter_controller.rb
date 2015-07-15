@@ -151,11 +151,11 @@ class ExporterController < ApplicationController
   end
 
   def verifyExtraTime(data, fnNormal, fnHalf, fnFull)
-    if data === data.sunday
+    if data.sunday?
       fnFull.call
     elsif data.holiday?(Holidays::TIPOS_FERIADOS)
       fnFull.call
-    elsif data === data.saturday
+    elsif data.saturday?
       fnHalf.call
     else
       fnNormal.call
