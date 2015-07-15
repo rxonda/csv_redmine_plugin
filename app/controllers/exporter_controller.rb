@@ -1,4 +1,5 @@
 require 'csv'
+require 'date'
 
 class ExporterController < ApplicationController
   unloadable
