@@ -99,10 +99,10 @@ class ExporterController < ApplicationController
       :qtd => e.hours
     }
     getCustomFieldValue(e.project,'ProjectCustomField', 'Centro de Custo') {|v| retorno[:objetoCusto]=v}
-    getCustomFieldValue(e.user,'UserCustomField','Centro de Custo') {|v| retorno[:centroCusto]=v.split(' - ').first}
-    getCustomFieldValue(e.user,'UserCustomField','Matrícula') {|v| retorno[:matricula]=v}
-    getCustomFieldValue(e.user,'UserCustomField','Cargo'){|v| retorno[:cargo] = v.split(' - ').first}
     getCustomFieldValue(e.activity,'TimeEntryActivityCustomField','Código SAP'){|v| retorno[:atividade]=v}
+    getCustomFieldValue(e.user,'UserCustomField','Matrícula') {|v| retorno[:matricula]=v}
+    getCustomFieldValue(e.user,'UserCustomField','Centro de Custo') {|v| retorno[:centroCusto]=v?v.split(' - ').first:'N/A'}
+    getCustomFieldValue(e.user,'UserCustomField','Cargo'){|v| retorno[:cargo]=v?v.split(' - ').first:'N/A'}
     callback = block
     callback.call(retorno)
   end
