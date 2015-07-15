@@ -97,9 +97,9 @@ class ExporterController < ApplicationController
 
   def pack(e, &block)
     retorno = {:data => e.spent_on, :qtd => e.hours}
-    getCustomFieldValue(e.project,'ProjectCustomField', 'Centro de Custo') {|v| retorno[:objetoCusto]=v}
+    getCustomFieldValue(e.project,'ProjectCustomField', 'Centro de Custo do Projeto') {|v| retorno[:objetoCusto]=v}
     getCustomFieldValue(e.activity,'TimeEntryActivityCustomField','Código SAP'){|v| retorno[:atividade]=v}
-    getCustomFieldValue(e.user,'UserCustomField','Matrícula') {|v| retorno[:matricula]=v}
+    getCustomFieldValue(e.user,'UserCustomField','Número de Matrícula') {|v| retorno[:matricula]=v}
     getCustomFieldValue(e.user,'UserCustomField','Centro de Custo') {|v| retorno[:centroCusto]=v ? v.split(' - ').first : 'N/A'}
     getCustomFieldValue(e.user,'UserCustomField','Cargo'){|v| retorno[:cargo]=v ? v.split(' - ').first : 'N/A'}
     callback = block
