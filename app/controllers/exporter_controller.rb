@@ -71,7 +71,7 @@ class ExporterController < ApplicationController
     parserActivity=Parser.new('activity')
     parserCFCC = ParserCustomField.new('UserCustomField','Centro de Custo')
     parserCentroCusto = ParserChained.new(parserUser, parserCFCC, parserSplit)
-    parserCentroCustoDescricao = ParserChained.new(paserUser, parserCFCC, parserSplitLast)
+    parserCentroCustoDescricao = ParserChained.new(parserUser, parserCFCC, parserSplitLast)
     parserObjetoCusto = ParserChained.new(parserProject, ParserCustomField.new('ProjectCustomField', 'Centro de Custo do Projeto'))
     parserCodigoSAP = ParserChained.new(parserActivity, ParserCustomField.new('TimeEntryActivityCustomField','Código SAP'))
     parserMatricula = ParserChained.new(parserUser, ParserCustomField.new('UserCustomField','Número de Matrícula'))
