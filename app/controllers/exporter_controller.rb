@@ -89,7 +89,7 @@ class ExporterController < ApplicationController
       :centroCusto=> ParserOptional.new('N/A', parserCentroCusto),
       :centroCustoDescricao=> ParserOptional.new('N/A', parserCentroCustoDescricao),
       :cargo=> ParserOptional.new('N/A', parserCargo),
-      :cargoDescricao=> parserCargoDescr
+      :cargoDescricao=> parserCargoDescr})
 
     resultado = TimeEntry.where(:spent_on=>(inicio..fim))
     .map {|t|
