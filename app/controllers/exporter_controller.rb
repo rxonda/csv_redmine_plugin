@@ -64,20 +64,32 @@ class ExporterController < ApplicationController
   end
 
   def execute(inicio, fim, fnSuccess, fnFail)
-    parserCentroCusto = ParserCustomField.new('user', 'UserCustomField','Centro de Custo', lambda{|v| v.split(' - ').first})
-    parserObjetoCusto = ParserCustomField.new('project', 'ProjectCustomField', 'Centro de Custo do Projeto')
+    parserSplit=ParserLambda.new(lambda{|v| v.split(' - ').first})
+    parserSplitLast=ParserLambda.new(lambda{|v| v.split(' - ').last})
+    parserUser=Parser.new('user')
+    parserProject=Parser.new('project')
+    parserActivity=Parser.new('activity')
+    parserCFCC = ParserCustomField.new('UserCustomField','Centro de Custo')
+    parserCentroCusto = ParserChained.new(parserUser, parserCFCC, parserSplit)
+    parserCentroCustoDescricao = ParserChained.new(paserUser, parserCFCC, parserSplitLast)
+    parserObjetoCusto = ParserChained.new(parserProject, ParserCustomField.new('ProjectCustomField', 'Centro de Custo do Projeto'))
+    parserCodigoSAP = ParserChained.new(parserActivity, ParserCustomField.new('TimeEntryActivityCustomField','Código SAP'))
+    parserMatricula = ParserChained.new(parserUser, ParserCustomField.new('UserCustomField','Número de Matrícula'))
+    parserCFCargo = ParserCustomField.new('UserCustomField','Cargo')
+    parserCargo = ParserChained.new(parserUser, parserCFCargo, parserSplit)
+    parserCargoDescr = ParserChained.new(parserUser, parserCFCargo, parserSplitLast)
     packer = Packer.new({:data=> Parser.new('spent_on'),
       :qtd=> Parser.new('hours'),
       :nomeFuncionario=> Parser.new('user.name'),
       :projeto=> Parser.new('project.name'),
       :atividade=> Parser.new('activity.name'),
       :objetoCusto=> ParserOptional.new('N/A', parserObjetoCusto, parserCentroCusto),
-      :codigoSAP=> ParserOptional.new('N/A', ParserCustomField.new('activity', 'TimeEntryActivityCustomField','Código SAP')),
-      :matricula=> ParserOptional.new('N/A', ParserCustomField.new('user', 'UserCustomField','Número de Matrícula')),
+      :codigoSAP=> ParserOptional.new('N/A', parserCodigoSAP),
+      :matricula=> ParserOptional.new('N/A', parserMatricula),
       :centroCusto=> ParserOptional.new('N/A', parserCentroCusto),
-      :centroCustoDescricao=> ParserOptional.new('N/A', ParserCustomField.new('user', 'UserCustomField','Centro de Custo', lambda{|v| v.split(' - ').last})),
-      :cargo=> ParserOptional.new('N/A', ParserCustomField.new('user', 'UserCustomField','Cargo', lambda{|v| v.split(' - ').first})),
-      :cargoDescricao=> ParserCustomField.new('user', 'UserCustomField','Cargo', lambda{|v| v.split(' - ').last})})
+      :centroCustoDescricao=> ParserOptional.new('N/A', parserCentroCustoDescricao),
+      :cargo=> ParserOptional.new('N/A', parserCargo),
+      :cargoDescricao=> parserCargoDescr
 
     resultado = TimeEntry.where(:spent_on=>(inicio..fim))
     .map {|t|
