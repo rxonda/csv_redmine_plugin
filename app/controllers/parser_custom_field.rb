@@ -1,6 +1,5 @@
 class ParserCustomField
-	def initialize(model,type,name)
-		@model = model
+	def initialize(type,name)
 		@customField = CustomField.where(:type => type, :name => name).first
 	end
 
