@@ -4,6 +4,10 @@ class ParserChained
 	end
 
 	def parse(e)
-		yield @parsers.reduce(e) {|m,c| c.parse(m)}
+		result = e
+		@parsers.each {|p|
+			p.parse(result) {|x| result = x}
+		}
+		yield result
 	end
 end
