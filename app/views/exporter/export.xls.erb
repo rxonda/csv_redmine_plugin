@@ -1,0 +1,71 @@
+<?xml version="1.0"?>
+<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
+  xmlns:o="urn:schemas-microsoft-com:office:office"
+  xmlns:x="urn:schemas-microsoft-com:office:excel"
+  xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"
+  xmlns:html="http://www.w3.org/TR/REC-html40">
+  <Worksheet ss:Name="Por projeto">
+    <Table>
+      <Row>
+        <Cell><Data ss:Type="String">Centro de Custo</Data></Cell>
+        <Cell><Data ss:Type="String">Descrição do Centro de Custo</Data></Cell>
+        <Cell><Data ss:Type="String">Matrícula</Data></Cell>
+        <Cell><Data ss:Type="String">Nome do Funcionário</Data></Cell>
+        <Cell><Data ss:Type="String">Código do Cargo</Data></Cell>
+        <Cell><Data ss:Type="String">Cargo</Data></Cell>
+        <Cell><Data ss:Type="String">Objeto de Custo</Data></Cell>
+        <Cell><Data ss:Type="String">Projeto</Data></Cell>
+        <Cell><Data ss:Type="String">Qtd.</Data></Cell>
+        <Cell><Data ss:Type="String">Percentual</Data></Cell>
+      </Row>
+    <% @acumulaByProjeto.each do |t| %>
+      <Row>
+        <Cell><Data ss:Type="String"><%= t[:centroCusto] %></Data></Cell>
+        <Cell><Data ss:Type="String"><%= t[:centroCustoDescricao] %></Data></Cell>
+        <Cell><Data ss:Type="String"><%= t[:matricula] %></Data></Cell>
+        <Cell><Data ss:Type="String"><%= t[:nomeFuncionario] %></Data></Cell>
+        <Cell><Data ss:Type="String"><%= t[:cargo] %></Data></Cell>
+        <Cell><Data ss:Type="String"><%= t[:cargoDescricao] %></Data></Cell>
+        <Cell><Data ss:Type="String"><%= t[:objetoCusto] %></Data></Cell>
+        <Cell><Data ss:Type="String"><%= t[:projeto] %></Data></Cell>
+        <Cell><Data ss:Type="Number"><%= t[:qtd] %></Data></Cell>
+        <Cell><Data ss:Type="Number"><%= t[:horaExtra] %></Data></Cell>
+      </Row>
+    <% end %>
+    </Table>
+  </Worksheet>
+  <Worksheet ss:Name="Por Atividade">
+    <Table>
+      <Row>
+        <Cell><Data ss:Type="String">Centro de Custo</Data></Cell>
+        <Cell><Data ss:Type="String">Descrição do Centro de Custo</Data></Cell>
+        <Cell><Data ss:Type="String">Matrícula</Data></Cell>
+        <Cell><Data ss:Type="String">Nome do Funcionário</Data></Cell>
+        <Cell><Data ss:Type="String">Código do Cargo</Data></Cell>
+        <Cell><Data ss:Type="String">Cargo</Data></Cell>
+        <Cell><Data ss:Type="String">Código SAP</Data></Cell>
+        <Cell><Data ss:Type="String">Atividade</Data></Cell>
+        <Cell><Data ss:Type="String">Objeto de Custo</Data></Cell>
+        <Cell><Data ss:Type="String">Projeto</Data></Cell>
+        <Cell><Data ss:Type="String">Qtd.</Data></Cell>
+        <Cell><Data ss:Type="String">Percentual</Data></Cell>
+      </Row>
+    <% @acumulaByAtividade.each do |t| %>
+      <Row>
+        <Cell><Data ss:Type="String"><%= t[:centroCusto] %></Data></Cell>
+        <Cell><Data ss:Type="String"><%= t[:centroCustoDescricao] %></Data></Cell>
+        <Cell><Data ss:Type="String"><%= t[:matricula] %></Data></Cell>
+        <Cell><Data ss:Type="String"><%= t[:nomeFuncionario] %></Data></Cell>
+        <Cell><Data ss:Type="String"><%= t[:cargo] %></Data></Cell>
+        <Cell><Data ss:Type="String"><%= t[:cargoDescricao] %></Data></Cell>
+        <Cell><Data ss:Type="String"><%= t[:codigoSAP] %></Data></Cell>
+        <Cell><Data ss:Type="String"><%= t[:atividade] %></Data></Cell>
+        <Cell><Data ss:Type="String"><%= t[:objetoCusto] %></Data></Cell>
+        <Cell><Data ss:Type="String"><%= t[:projeto] %></Data></Cell>
+        <Cell><Data ss:Type="Number"><%= t[:qtd] %></Data></Cell>
+        <Cell><Data ss:Type="Number"><%= t[:horaExtra] %></Data></Cell>
+      </Row>
+    <% end %>
+    </Table>
+  </Worksheet>
+</Workbook>

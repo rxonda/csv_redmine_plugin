@@ -9,24 +9,37 @@ class ExporterController < ApplicationController
   end
 
   def export
-    execute(params[:dataInicio], params[:dataTermino], lambda{|_inicio,_fim|
-      respond_to do |format|
-        format.html
-        format.csv do
+    valida(params[:dataInicio], params[:dataTermino],
+      lambda{|inicio, fim|
+        execute(inicio, fim, lambda{|resultado|
           _agora = DateTime.now
-          filename = "TS_RCTI_#{_inicio.strftime('%Y%m%d')}I_#{_fim.strftime('%Y%m%d')}F_#{_agora.strftime('%Y%m%d')}G_#{_agora.strftime('%H%M%S')}G.CSV"
-          headers['Content-Disposition'] = "attachment; filename=#{filename}"
-          headers['content-Type'] ||= 'text/csv; charset=UTF-8; header=present'
-        end
-      end}, lambda{|msg|
-        flash[:error] = msg
-        redirect_to exporter_timesheet_path
-        })
+          filename = "TS_RCTI_#{inicio.strftime('%Y%m%d')}I_#{fim.strftime('%Y%m%d')}F_#{_agora.strftime('%Y%m%d')}G_#{_agora.strftime('%H%M%S')}G"
+          if params[:commit] == 'Excel'
+            headers['Content-Disposition'] = "attachment; filename=#{filename}.XLS"
+            headers['content-Type'] ||= 'application/xls; charset=UTF-8; header=present'
+            @acumulaByProjeto=[]
+            soma(resultado.group_by {|t| [t[:objetoCusto],t[:centroCusto],t[:horaExtra]]}) {|x| @acumulaByProjeto << x}
+            @acumulaByAtividade=[]
+            soma(resultado.group_by {|t| [t[:objetoCusto], t[:codigoSAP],t[:centroCusto],t[:horaExtra]]}) {|x| @acumulaByAtividade << x}
+            render :template => 'exporter/export.xls.erb', :layout => false
+          end
+          if params[:commit] == 'CSV'
+            headers['Content-Disposition'] = "attachment; filename=#{filename}.CSV"
+            headers['content-Type'] ||= 'text/csv; charset=UTF-8; header=present'
+            @timeEntries = resultado
+            render :template => 'exporter/export.csv.erb', :layout => false
+          end}, lambda{|msg|
+            flash[:error] = msg
+            redirect_to exporter_timesheet_path
+          })
+    }, lambda{|msg|
+      flash[:error] = msg
+      redirect_to exporter_timesheet_path
+    })
   end
 
   private
-
-  def execute(dataInicio, dataTermino, fnSuccess, fnFail)
+  def valida(dataInicio, dataTermino, fnSuccess, fnFail)
     if dataInicio.blank? && dataTermino.blank?
       fnFail.call('Você deve informar a Data de início e a Data de término')
       return
@@ -47,106 +60,78 @@ class ExporterController < ApplicationController
       fnFail.call('Data de início não pode ser maior que a Data de término!')
       return
     end
+    fnSuccess.call _inicio, _fim
+  end
 
-    @timeEntries = []
-    @porDataMatricula = {}
+  def execute(inicio, fim, fnSuccess, fnFail)
+    parserCentroCusto = ParserCustomField.new('user', 'UserCustomField','Centro de Custo', lambda{|v| v.split(' - ').first})
+    parserObjetoCusto = ParserCustomField.new('project', 'ProjectCustomField', 'Centro de Custo do Projeto')
+    packer = Packer.new({:data=> Parser.new('spent_on'),
+      :qtd=> Parser.new('hours'),
+      :nomeFuncionario=> Parser.new('user.name'),
+      :projeto=> Parser.new('project.name'),
+      :atividade=> Parser.new('activity.name'),
+      :objetoCusto=> ParserOptional.new('N/A', parserObjetoCusto, parserCentroCusto),
+      :codigoSAP=> ParserOptional.new('N/A', ParserCustomField.new('activity', 'TimeEntryActivityCustomField','Código SAP')),
+      :matricula=> ParserOptional.new('N/A', ParserCustomField.new('user', 'UserCustomField','Número de Matrícula')),
+      :centroCusto=> ParserOptional.new('N/A', parserCentroCusto),
+      :centroCustoDescricao=> ParserOptional.new('N/A', ParserCustomField.new('user', 'UserCustomField','Centro de Custo', lambda{|v| v.split(' - ').last})),
+      :cargo=> ParserOptional.new('N/A', ParserCustomField.new('user', 'UserCustomField','Cargo', lambda{|v| v.split(' - ').first})),
+      :cargoDescricao=> ParserCustomField.new('user', 'UserCustomField','Cargo', lambda{|v| v.split(' - ').last})})
 
-    TimeEntry.where(:spent_on=>(_inicio.._fim)).each do |t| 
-      pack(t) {|v|
-        normaliza(v) {|z|
-          consolida(z) {|e| @timeEntries << e}
-        }
+    resultado = TimeEntry.where(:spent_on=>(inicio..fim))
+    .map {|t|
+      packer.pack(t)
+    }.group_by {|entry|
+      [entry[:data], entry[:matricula], entry[:objetoCusto], entry[:codigoSAP]]
+    }.flat_map {|k,v|
+      v.reduce {|m,c|
+        m[:qtd]+=c[:qtd]
+        m
       }
-    end
-
-    @porDataMatricula.each do |chave, valor|
-      verifyExtraTime(chave[0], lambda {
-          if valor[:total] > 8.0
-            qtdExtra = valor[:total] - 8.0
-            valor[:lancamentos].each do |k,v|
-              razao = v[:qtd] / valor[:total]
-              novaEntrada = v.clone
-              v[:qtd] = razao * 8.0
-              v[:horaExtra] = 0.0
-              novaEntrada[:qtd] = razao * qtdExtra
-              novaEntrada[:horaExtra] = 50.0
-              @timeEntries << novaEntrada          
-            end
+    }.group_by {|entry| [entry[:data], entry[:matricula]]}
+    .flat_map {|k,v|
+      _total = v.reduce(0.0) {|m,e| m+=e[:qtd] }
+      v.flat_map do |t|
+        _resultado=[]
+        _resultado << t
+        verifyExtraTime(k[0], lambda {
+          if _total > 8.0
+            qtdExtra = _total - 8.0
+            razao = t[:qtd] / _total
+            novaEntrada = t.clone
+            t[:qtd] = razao * 8.0
+            t[:horaExtra] = 0.0
+            novaEntrada[:qtd] = razao * qtdExtra
+            novaEntrada[:horaExtra] = 50.0
+            _resultado << novaEntrada
           else
-            valor[:lancamentos].each do |k,v|
-              v[:horaExtra] = 0.0
-            end
+            t[:horaExtra] = 0.0
           end
           }, lambda {
-          valor[:lancamentos].each do |k,v|
-            v[:horaExtra] = 50.0
-          end
+            t[:horaExtra] = 50.0
           }, lambda {
-          valor[:lancamentos].each do |k,v|
-            v[:horaExtra] = 100.0
-          end
+            t[:horaExtra] = 100.0
           })
-    end
+        _resultado
+      end
+    }
 
-    if @timeEntries.empty?
-      fnFail.call('Nenhum registro encontrado!')
+    if resultado.empty?
+      fnFail.call 'Nenhum registro encontrado!'
     else
-      fnSuccess.call(_inicio, _fim)
+      fnSuccess.call resultado
     end
   end
 
-  def pack(e, &block)
-    retorno = {:data => e.spent_on, :qtd => e.hours}
-    getCustomFieldValue(e.project,'ProjectCustomField', 'Centro de Custo do Projeto') {|v| retorno[:objetoCusto]=v}
-    getCustomFieldValue(e.activity,'TimeEntryActivityCustomField','Código SAP'){|v| retorno[:atividade]=v}
-    getCustomFieldValue(e.user,'UserCustomField','Número de Matrícula') {|v| retorno[:matricula]=v}
-    getCustomFieldValue(e.user,'UserCustomField','Centro de Custo') {|v| retorno[:centroCusto]=v ? v.split(' - ').first : 'N/A'}
-    getCustomFieldValue(e.user,'UserCustomField','Cargo'){|v| retorno[:cargo]=v ? v.split(' - ').first : 'N/A'}
-    callback = block
-    callback.call(retorno)
-  end
-
-  def normaliza(e, &block)
-    e[:centroCusto]||='N/A'
-    e[:matricula]||='N/A'
-    e[:cargo]||='N/A'
-    e[:atividade]||='N/A'
-    if e[:objetoCusto].blank?
-      e[:objetoCusto]=e[:centroCusto]
-    end
-    callback=block
-    callback.call e
-  end
-
-  def getCustomFieldValue(_model,_type,_name,&block)
-    callback = block
-    CustomField.where(:type => _type, :name => _name).take(1).each do |customField|
-      callback.call(_model.custom_value_for(customField).value)
-    end
-  end
-
-  def consolida(entry, &block)
-    _keyDataMatricula = [
-      entry[:data],
-      entry[:matricula]
-    ]
-
-    (@porDataMatricula[_keyDataMatricula] ||= {
-      :total => 0.0,
-      :lancamentos => {}
-    })[:total] += entry[:qtd]
-
-    _key = [
-      entry[:objetoCusto],
-      entry[:atividade]
-    ]
-
-    if !@porDataMatricula[_keyDataMatricula][:lancamentos][_key]
-      @porDataMatricula[_keyDataMatricula][:lancamentos][_key] = entry
-      callback = block
-      callback.call entry
-    else
-      @porDataMatricula[_keyDataMatricula][:lancamentos][_key][:qtd]+=entry[:qtd]
+  def soma(listagem)
+    listagem.each do |k,v|
+      _temp=v.first.clone
+      _temp[:qtd]=0.0
+      yield v.reduce(_temp) {|acumulado, entry| 
+        acumulado[:qtd]+=entry[:qtd]
+        acumulado
+      }
     end
   end
 

@@ -1,12 +1,12 @@
 <h2>Timesheet</h2>
-<%= form_tag({:controller => 'exporter', :action => 'export', :format => 'csv'}, :method => 'get') do %>
+<%= form_tag({:controller => 'exporter', :action => 'export'}, :method => 'get') do %>
 	<div class="box tabular">
 		<p><%= label_tag(:dataInicio, "Data de início do período:") %>
 		<%= text_field_tag(:dataInicio) %></p>
 		<p><%= label_tag(:dataTermino, "Data de fim do período:") %>
 		<%= text_field_tag(:dataTermino) %></p>
 	</div>
-	<%= submit_tag("Gerar arquivo") %>
+	<%= submit_tag("Excel") %><%= submit_tag("CSV") %>
 <% end %>
 <script src="/javascripts/i18n/datepicker-pt-BR.js?1431245373" type="text/javascript"></script>
 <script type="text/javascript">
